@@ -1,0 +1,6 @@
+*.o
+*.tar.gz
+*.so
+*.sublime-project
+*.sublime-workspace
+*.pdf
