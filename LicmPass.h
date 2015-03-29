@@ -12,6 +12,7 @@ private:
 	// Private fields go here
 public:
 	static char ID;
+	// Just making edits
 	LicmPass() : llvm::LoopPass(ID) {}
 
 	bool runOnLoop(llvm::Loop*, llvm::LPPassManager&);

@@ -8,6 +8,14 @@ DCEPass.o: DCEPass.cpp DCEPass.h Makefile
 	$(CXX) $(CXXFLAGS) DCEPass.cpp -c -o $@
 LicmPass.o: LicmPass.cpp LicmPass.h Makefile
 	$(CXX) $(CXXFLAGS) LicmPass.cpp -c -o $@
+DFAFramework.o: DFAFramework.h Makefile
+	$(CXX) $(CXXFLAGS) DFAFramework.h -c -o $@
+Worklist.o: Worklist.h Makefile
+	$(CXX) $(CXXFLAGS) Worklist.h -c -o $@
+Meet.o: Meet.h Makefile
+	$(CXX) $(CXXFLAGS) Meet.h -c -o $@
+Transfer.o: Transfer.h Makefile
+	$(CXX) $(CXXFLAGS) Transfer.h -c -o $@
 
 dce-pass.so: DCEPass.o
 	$(CXX) -shared $^ -o $@
