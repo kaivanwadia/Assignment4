@@ -33,3 +33,5 @@ Pair structure :
 If TerminatorInst and ReturnInst then rhs is live
 If LHS is faint then rhs is faint
 If LHS is live then rhs is live
+
+Every LHS is added to kill
