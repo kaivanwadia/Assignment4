@@ -1,10 +1,13 @@
-#ifndef CS380C_ASSIGNMENT4_DFAFRAMEWORK_H
-#define CS380C_ASSIGNMENT4_DFAFRAMEWORK_H
+#ifndef CS380C_ASSIGNMENT3_DFAFRAMEWORK_H
+#define CS380C_ASSIGNMENT3_DFAFRAMEWORK_H
 
 #include <unordered_set>
 #include <unordered_map>
 #include "Meet.h"
 #include "Transfer.h"
+#include "Worklist.h"
+#include "Hasher.h"
+#include "Equal.h"
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/CFG.h>
@@ -16,28 +19,29 @@ namespace cs380c
 
 // T is the type on which the analysis is being done. For example it can be done on Instructions, 
 // Expressions, Definitions etc
-template <typename T>
+// , typename HasherType, typename EqualType
+template <typename T, typename HasherType, typename EqualType>
 class DFAFramework {
 private:
 	bool topDown;
-	using TempSet = std::vector<T>;
-	using DFAMap = std::unordered_map<const llvm::BasicBlock*, TempSet>;
+	using TypeSet = std::unordered_set<T, HasherType, EqualType>;
+	using DFAMap = std::unordered_map<const llvm::BasicBlock*, TypeSet>;
 	using OrderMap = std::unordered_map<llvm::BasicBlock*, int>;
 	DFAMap inMap, outMap;
-	Meet<T>* meet;
-	Transfer<T>* transfer;
-	TempSet initialSet;
+	Meet<T, HasherType, EqualType>* meet;
+	Transfer<T, HasherType, EqualType>* transfer;
+	TypeSet initialSet;
 	OrderMap postOrderMap;
 
 public:
 	DFAFramework() {}
-	DFAFramework(bool _topDown, Meet<T>* _meet, Transfer<T>* _transfer) {
+	DFAFramework(bool _topDown, Meet<T, HasherType, EqualType>* _meet, Transfer<T, HasherType, EqualType>* _transfer) {
 		topDown = _topDown;
 		inMap = DFAMap();
 		outMap = DFAMap();
 		meet = _meet;
 		transfer = _transfer;
-		initialSet = TempSet();
+		initialSet = TypeSet();
 		postOrderMap = std::unordered_map<llvm::BasicBlock*, int>();
 	}
 
@@ -129,15 +133,15 @@ public:
 		return;
 	}
 
-	void setInitialValues(TempSet _initialSet)
+	void setInitialValues(TypeSet _initialSet)
 	{
 		initialSet = _initialSet;
 	}
 
-	const TempSet& getInValues(const llvm::BasicBlock* bb) const {
+	const TypeSet& getInValues(const llvm::BasicBlock* bb) const {
 		return inMap.at(bb);
 	}
-	const TempSet& getOutValues(const llvm::BasicBlock* bb) const {
+	const TypeSet& getOutValues(const llvm::BasicBlock* bb) const {
 		return outMap.at(bb);
 	}
 };
