@@ -18,11 +18,12 @@ template <typename T, typename HasherType, typename EqualType>
 class Transfer
 {
 private:
-
 public:
+	using TypeSet = std::unordered_set<T, HasherType, EqualType>;
+	using DFAMap = std::unordered_map<const llvm::BasicBlock*, TypeSet>;
 	Transfer() {}
 	// Does the Transfer operation on a BasicBlock. Returns a bool of the transfer result.
-	virtual bool doTransfer(const llvm::BasicBlock* bb, std::unordered_map<const llvm::BasicBlock*, std::unordered_set<T, HasherType, EqualType>>& inMap, std::unordered_map<const llvm::BasicBlock*, std::unordered_set<T, HasherType, EqualType>>& outMap) = 0;
+	virtual bool doTransfer(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap) = 0;
 };
 
 class DCETransfer: public Transfer<llvm::StringRef, StringRefHash, StringRefEqual>
@@ -30,15 +31,13 @@ class DCETransfer: public Transfer<llvm::StringRef, StringRefHash, StringRefEqua
 private:
 public:
 	DCETransfer() : Transfer<llvm::StringRef, StringRefHash, StringRefEqual>() {}
-	bool doTransfer(const llvm::BasicBlock* bb, std::unordered_map<const llvm::BasicBlock*, std::unordered_set<llvm::StringRef, StringRefHash, StringRefEqual>>& inMap, std::unordered_map<const llvm::BasicBlock*, std::unordered_set<llvm::StringRef, StringRefHash, StringRefEqual>>& outMap)
+	bool doTransfer(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
 		bool updated = false;
 		printf("into transfer\n");
 		return updated;
 	}
 };
-
-
 }
 
 #endif
