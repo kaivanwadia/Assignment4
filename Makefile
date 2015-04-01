@@ -1,4 +1,4 @@
-CXXFLAGS = $(shell llvm-config --cxxflags) -fno-rtti
+CXXFLAGS = -w $(shell llvm-config --cxxflags) -fno-rtti
 
 all: dce-pass.so licm-pass.so
 dce: dce-pass.so
@@ -16,6 +16,10 @@ Meet.o: Meet.h Makefile
 	$(CXX) $(CXXFLAGS) Meet.h -c -o $@
 Transfer.o: Transfer.h Makefile
 	$(CXX) $(CXXFLAGS) Transfer.h -c -o $@
+Hasher.o: Hasher.h Makefile
+	$(CXX) $(CXXFLAGS) Hasher.h -c -o $@
+Equal.o: Equal.h Makefile
+	$(CXX) $(CXXFLAGS) Equal.h -c -o $@
 
 dce-pass.so: DCEPass.o
 	$(CXX) -shared $^ -o $@

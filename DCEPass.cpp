@@ -1,7 +1,7 @@
 #define DEBUG_TYPE "DCEPass"
 
 #include "DCEPass.h"
-
+#include <unordered_set>
 #include "llvm/ADT/Statistic.h"
 #include "llvm/IR/Function.h"
 #include "llvm/Support/raw_ostream.h"
@@ -13,8 +13,10 @@ STATISTIC(NumInstRemoved, "The # of dead instructions removed by DCEPass");
 
 bool DCEPass::runOnFunction(Function& f)
 {
-	// Remove the following two lines before you write down your own codes
-	errs() << "Hello, " << f.getName() << "!\n";
+
+	std::unordered_set<StringRef, StringRefHash, StringRefEqual> initialSet;
+	dfa->setInitialValues(initialSet);
+	dfa->doDFA(f);
 	return false;
 }
 

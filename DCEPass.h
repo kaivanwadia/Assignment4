@@ -1,7 +1,11 @@
 #ifndef CS380C_ASSIGNMENT4_DCEPASS_H
 #define CS380C_ASSIGNMENT4_DCEPASS_H
 
+
+#include "DFAFramework.h"
 #include "llvm/Pass.h"
+
+
 
 namespace cs380c
 {
@@ -12,7 +16,10 @@ private:
 	// Private fields go here
 public:
 	static char ID;
-	DCEPass() : llvm::FunctionPass(ID) {}
+	DFAFramework<llvm::StringRef, StringRefHash, StringRefEqual>* dfa;
+	DCEPass() : llvm::FunctionPass(ID) {
+		dfa = new DFAFramework<llvm::StringRef, StringRefHash, StringRefEqual>(false, new DCEMeet(), new DCETransfer());
+	}
 
 	bool runOnFunction(llvm::Function&);
 
