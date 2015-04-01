@@ -45,12 +45,15 @@ public:
 			StringRef lhs = (*instItr).getName();
 			if(isa<TerminatorInst>(*instItr))
 			{
-				for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+				if (isa<ReturnInst>(*instItr))
 				{
-					if (!(isa<Constant>(*opItr)) && !(isa<BasicBlock>(*opItr)))
+					for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
 					{
-						errs() << "Here\n";
-						killSet.insert((*opItr)->getName());
+						if (!(isa<Constant>(*opItr)) && !(isa<BasicBlock>(*opItr)))
+						{
+							killSet.insert((*opItr)->getName());
+							// errs() << "Name : " << (*opItr)->getName() << "\n";
+						}
 					}
 				}
 				continue;
@@ -89,8 +92,8 @@ public:
 		// FINAL FORMULA: IN = (OUT + GEN) - KILL
 		TypeSet outVars = outMap[bb];
 		TypeSet inVars;
-		errs() << "Kill Set : " << killSet.size() << "\n";
-		errs() << "Gen Set : " << genSet.size() << "\n";
+		// errs() << "Kill Set : " << killSet.size() << "\n";
+		// errs() << "Gen Set : " << genSet.size() << "\n";
 		for (auto outVar : outVars)
 		{
 			if (killSet.count(outVar) == 0)
@@ -105,7 +108,7 @@ public:
 				updated |= inVars.insert(genVar).second;
 			}
 		}
-		errs() << "InVars Set : " << inVars.size() << "\n";
+		// errs() << "InVars Set : " << inVars.size() << "\n";
 		inMap[bb] = inVars;
 		return updated;
 	}

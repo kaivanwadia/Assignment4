@@ -10,6 +10,5 @@ void ifTest(int a)
 	{
 		magic = x *2;
 	}
-
 	return;
 }
