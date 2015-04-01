@@ -102,6 +102,8 @@ public:
 		while (!workList.empty())
 		{
 			auto currBB = workList.dequeue();
+			errs() << "=======================================\n";
+			errs() << "Analyzing BB : " << currBB->getName() << "\n";
 			bool meetChangedValue = this->meet->doMeet(currBB, this->inMap, this->outMap);
 			if (!meetChangedValue && !first)
 			{

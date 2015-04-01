@@ -35,6 +35,7 @@ public:
 	bool doMeet(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
 		bool updated = false;
+		printf("In doMeet of DCEMeet\n");
 		auto itr = outMap.find(bb);
 		if(itr == outMap.end())
 		{
@@ -51,7 +52,6 @@ public:
 				updated |= bbVariables.insert(variable).second;
 			}
 		}
-		printf("into meet\n");
 		return updated;
 	}
 };

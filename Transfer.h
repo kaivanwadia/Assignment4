@@ -34,41 +34,79 @@ public:
 	bool doTransfer(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
 		bool updated = false;
-		printf("into transfer\n");
+		printf("In doTransfer of DCETransfer\n");
 
-		TypeSet gen;
-		TypeSet kill;
-
+		TypeSet genSet;
+		TypeSet killSet;
 		for(auto instItr = bb->rbegin(); instItr != bb->rend(); instItr++)
 		{
-			errs() << *instItr << "\n";
-
-			// if LHS not in Kill then LHS add to GEN
-			auto  inKill = kill.find((*instItr).getName());
-			if(inKill == kill.end())
-			{
-				gen.insert((*instItr).getName());
-			}
-			// if LHS is in GEN U OUT then RHS add to GEN
-			auto inGen = gen.find((*instItr).getName());
-			auto inOut = outMap[bb].find((*instItr).getName());
-			if(inGen == gen.end() && inOut == outMap[bb].end())
-			{
-				gen.insert((*instItr).getName());
-			}
-			// if LHS is in KILL then RHS add to KILL
-			if(inKill != kill.end())
-			{
-				// add variables to KILL O.o
-			}
+			// errs() << *instItr << "\n";
 			// if terminator add to KILL
-			// FINAL FORMULA: (OUT + GEN) - KILL
-
-
-
+			StringRef lhs = (*instItr).getName();
+			if(isa<TerminatorInst>(*instItr))
+			{
+				for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+				{
+					if (!(isa<Constant>(*opItr)) && !(isa<BasicBlock>(*opItr)))
+					{
+						errs() << "Here\n";
+						killSet.insert((*opItr)->getName());
+					}
+				}
+				continue;
+			}
+			bool inKill = killSet.find(lhs) != killSet.end();
+			// if LHS not in Kill then add LHS to GEN
+			if(!inKill)
+			{
+				genSet.insert(lhs);
+			}
+			// if LHS is in (GEN U OUT) then add RHS to GEN
+			bool inGen = genSet.find(lhs) != genSet.end();
+			auto inOut = outMap[bb].find(lhs) != outMap[bb].end();
+			if(inGen || inOut)
+			{
+				for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+				{
+					if (!isa<Constant>(*opItr))
+					{
+						genSet.insert((*opItr)->getName());
+					}
+				}
+			}
+			// if LHS is in KILL then add RHS to KILL
+			if(inKill)
+			{
+				for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+				{
+					if (!isa<Constant>(*opItr))
+					{
+						killSet.insert((*opItr)->getName());
+					}
+				}
+			}
 		}
-
-
+		// FINAL FORMULA: IN = (OUT + GEN) - KILL
+		TypeSet outVars = outMap[bb];
+		TypeSet inVars;
+		errs() << "Kill Set : " << killSet.size() << "\n";
+		errs() << "Gen Set : " << genSet.size() << "\n";
+		for (auto outVar : outVars)
+		{
+			if (killSet.count(outVar) == 0)
+			{
+				updated |= inVars.insert(outVar).second;
+			}
+		}
+		for (auto genVar : genSet)
+		{
+			if (killSet.count(genVar) == 0)
+			{
+				updated |= inVars.insert(genVar).second;
+			}
+		}
+		errs() << "InVars Set : " << inVars.size() << "\n";
+		inMap[bb] = inVars;
 		return updated;
 	}
 };

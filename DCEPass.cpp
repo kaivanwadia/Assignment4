@@ -1,6 +1,7 @@
 #define DEBUG_TYPE "DCEPass"
 
 #include "DCEPass.h"
+#include "DataFlowAnnotator.h"
 #include <unordered_set>
 #include "llvm/ADT/Statistic.h"
 #include "llvm/IR/Function.h"
@@ -13,10 +14,11 @@ STATISTIC(NumInstRemoved, "The # of dead instructions removed by DCEPass");
 
 bool DCEPass::runOnFunction(Function& f)
 {
-
 	std::unordered_set<StringRef, StringRefHash, StringRefEqual> initialSet;
 	dfa->setInitialValues(initialSet);
 	dfa->doDFA(f);
+	DataFlowAnnotator<DCEPass> annotator(*this, errs());
+	annotator.print(f);
 	return false;
 }
 
