@@ -35,6 +35,22 @@ public:
 	bool doMeet(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
 		bool updated = false;
+		auto itr = outMap.find(bb);
+		if(itr == outMap.end())
+		{
+			updated = true;
+			itr = outMap.insert(std::make_pair(bb, TypeSet())).first;
+		}
+
+		auto& bbVariables = itr->second;
+		for(auto bbItr = succ_begin(bb); bbItr != succ_end(bb); bbItr++)
+		{
+			auto succVariables = inMap[*bbItr];
+			for(auto const variable : succVariables)
+			{
+				updated |= bbVariables.insert(variable).second;
+			}
+		}
 		printf("into meet\n");
 		return updated;
 	}

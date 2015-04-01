@@ -35,6 +35,40 @@ public:
 	{
 		bool updated = false;
 		printf("into transfer\n");
+
+		TypeSet gen;
+		TypeSet kill;
+
+		for(auto instItr = bb->rbegin(); instItr != bb->rend(); instItr++)
+		{
+			errs() << *instItr << "\n";
+
+			// if LHS not in Kill then LHS add to GEN
+			auto  inKill = kill.find((*instItr).getName());
+			if(inKill == kill.end())
+			{
+				gen.insert((*instItr).getName());
+			}
+			// if LHS is in GEN U OUT then RHS add to GEN
+			auto inGen = gen.find((*instItr).getName());
+			auto inOut = outMap[bb].find((*instItr).getName());
+			if(inGen == gen.end() && inOut == outMap[bb].end())
+			{
+				gen.insert((*instItr).getName());
+			}
+			// if LHS is in KILL then RHS add to KILL
+			if(inKill != kill.end())
+			{
+				// add variables to KILL O.o
+			}
+			// if terminator add to KILL
+			// FINAL FORMULA: (OUT + GEN) - KILL
+
+
+
+		}
+
+
 		return updated;
 	}
 };
