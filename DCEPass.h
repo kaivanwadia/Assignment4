@@ -14,18 +14,20 @@ private:
 	// Private fields go here
 public:
 	static char ID;
-	using PairSet = std::pair<StringRef, STATUS>;
-	DFAFramework<PairSet, StringRefHashPair, StringRefEqualPair>* dfa;
+	using StringSet = std::unordered_set<StringRef, StringRefHash, StringRefEqual>;
+	DFAFramework<StringRef, StringRefHash, StringRefEqual>* dfa;
 	DCEPass() : llvm::FunctionPass(ID) {
-		dfa = new DFAFramework<PairSet, StringRefHashPair, StringRefEqualPair>(false, new DCEMeetPair(), new DCETransferPair());
+		dfa = new DFAFramework<StringRef, StringRefHash, StringRefEqual>(false, new DCEMeet(), new DCETransfer());
 	}
 
 	bool runOnFunction(llvm::Function&);
 
-	const std::unordered_set<PairSet, StringRefHashPair, StringRefEqualPair>& getInValues(const llvm::BasicBlock* bb) const {
+	void populateInitialSet(StringSet& set, Function &f);
+
+	const std::unordered_set<StringRef, StringRefHash, StringRefEqual>& getInValues(const llvm::BasicBlock* bb) const {
 		return dfa->getInValues(bb);
 	}
-	const std::unordered_set<PairSet, StringRefHashPair, StringRefEqualPair>& getOutValues(const llvm::BasicBlock* bb) const {
+	const std::unordered_set<StringRef, StringRefHash, StringRefEqual>& getOutValues(const llvm::BasicBlock* bb) const {
 		return dfa->getOutValues(bb);
 	}
 

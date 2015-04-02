@@ -34,14 +34,15 @@ private:
 		os << "{ ";
 		for (auto v: state)
 		{
-			std::string state = "L";
+			/*std::string state = "L";
 			if(v.second == FAINT)
 			{
 				state = "F";
 				// os << v.first.str() << " ";
 			}
 			os << "( " << v.first.str() << ", " << state << ") ";
-			// os << v->getName() << " ";
+			*/
+			os << v.str() << " ";
 		}
 		os << "}";
 	}

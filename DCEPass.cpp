@@ -15,12 +15,28 @@ STATISTIC(NumInstRemoved, "The # of dead instructions removed by DCEPass");
 bool DCEPass::runOnFunction(Function& f)
 {
 
-	std::unordered_set<PairSet, StringRefHashPair, StringRefEqualPair> initialSet;
+	StringSet initialSet;
+	populateInitialSet(initialSet, f);
 	dfa->setInitialValues(initialSet);
 	dfa->doDFA(f);
 	DataFlowAnnotator<DCEPass> annotator(*this, errs());
 	annotator.print(f);
 	return false;
+}
+
+void DCEPass::populateInitialSet(StringSet& set, Function& f)
+{
+	for(auto& bb : f)
+	{
+		for(auto& inst : bb)
+		{
+			StringRef lhs = inst.getName();
+			if(lhs.str() != "")
+			{
+				set.insert(lhs);
+			}
+		}
+	}
 }
 
 void DCEPass::getAnalysisUsage(AnalysisUsage &AU) const
