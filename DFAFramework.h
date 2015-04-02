@@ -1,6 +1,8 @@
 #ifndef CS380C_ASSIGNMENT4_DFAFRAMEWORK_H
 #define CS380C_ASSIGNMENT4_DFAFRAMEWORK_H
 
+enum STATUS {LIVE, FAINT};
+
 #include <unordered_set>
 #include <unordered_map>
 #include "Meet.h"
@@ -13,6 +15,7 @@
 #include <llvm/IR/CFG.h>
 #include <queue>
 #include <stack>
+
 
 namespace cs380c
 {

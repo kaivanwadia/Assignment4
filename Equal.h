@@ -20,5 +20,17 @@ public:
 		return lhsElem.str().compare(rhsElem.str()) == 0;
 	}
 };
+
+class StringRefEqualPair : Equal<std::pair<llvm::StringRef, STATUS>>
+{
+public:
+	using PairSet = std::pair<llvm::StringRef, STATUS>;
+	size_t operator() (const PairSet &lhsElem, const PairSet &rhsElem) const
+	{
+		return lhsElem.first.str().compare(rhsElem.first.str()) == 0;
+	}
+};
+
+
 }
 #endif

@@ -34,7 +34,8 @@ private:
 		os << "{ ";
 		for (auto v: state)
 		{
-			os << v.str() << " ";
+			if(v.second == FAINT)
+				os << v.first.str() << " ";
 			// os << v->getName() << " ";
 		}
 		os << "}";

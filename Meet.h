@@ -56,6 +56,36 @@ public:
 	}
 };
 
+class DCEMeetPair: public Meet<std::pair<StringRef, STATUS>, StringRefHashPair, StringRefEqualPair>
+{
+private:
+public:
+	using PairSet = std::pair<StringRef, STATUS>;
+	DCEMeetPair() : Meet<PairSet, StringRefHashPair, StringRefEqualPair>() {}
+	bool doMeet(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
+	{
+		bool updated = false;
+		printf("In doMeet of DCEMeetPair\n");
+		auto itr = outMap.find(bb);
+		if(itr == outMap.end())
+		{
+			updated = true;
+			itr = outMap.insert(std::make_pair(bb, TypeSet())).first;
+		}
+
+		auto& bbVariables = itr->second;
+		for(auto bbItr = succ_begin(bb); bbItr != succ_end(bb); bbItr++)
+		{
+			auto succVariables = inMap[*bbItr];
+			for(auto const variable : succVariables)
+			{
+				updated |= bbVariables.insert(variable).second;
+			}
+		}
+		return updated;
+	}
+};
+
 }
 
 #endif

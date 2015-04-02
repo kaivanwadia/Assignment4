@@ -52,7 +52,7 @@ public:
 						if (!(isa<Constant>(*opItr)) && !(isa<BasicBlock>(*opItr)))
 						{
 							killSet.insert((*opItr)->getName());
-							// errs() << "Name : " << (*opItr)->getName() << "\n";
+							 errs() << "Name : " << (*opItr)->getName() << "\n";
 						}
 					}
 				}
@@ -109,6 +109,176 @@ public:
 			}
 		}
 		// errs() << "InVars Set : " << inVars.size() << "\n";
+		inMap[bb] = inVars;
+		return updated;
+	}
+};
+
+
+class DCETransferPair: public Transfer<std::pair<StringRef, STATUS>, StringRefHashPair, StringRefEqualPair>
+{
+private:
+public:
+	using PairSet = std::pair<StringRef, STATUS>;
+	DCETransferPair() : Transfer<PairSet, StringRefHashPair, StringRefEqualPair>() {}
+	bool doTransfer(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
+	{
+		bool updated = false;
+		printf("In doTransfer of DCETransfer\n");
+
+		TypeSet genSet;
+		TypeSet killSet;
+		for(auto instItr = bb->rbegin(); instItr != bb->rend(); instItr++)
+		{
+			// errs() << *instItr << "\n";
+			// if terminator add to KILL (AKA generate Liveness)
+			StringRef lhs = (*instItr).getName();
+			
+			if(isa<TerminatorInst>(*instItr))
+			{
+				//if(isa<ReturnInst>(*instItr))
+				{
+					for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+					{
+						if (!(isa<Constant>(*opItr)) && !(isa<BasicBlock>(*opItr)))
+						{
+							genSet.insert(PairSet((*opItr)->getName(), LIVE));
+							 errs() << "Name : " << (*opItr)->getName() << "\n";
+						}
+					}
+				}
+			}
+
+			// Find in genSet
+			auto genItr = genSet.find(PairSet(lhs, FAINT));
+			// Find in OutSet
+			auto outItr = outMap[bb].find(PairSet(lhs, FAINT));
+			// if found check if faint or live 
+			bool foundOut = false;
+			bool foundGen = false;
+			if(outItr != outMap[bb].end())
+			{
+				if((*outItr).second == FAINT)
+				{
+					// do stuff on faint
+				}
+				else
+				{
+					// do stuff on live
+					// add all the RHS stuff to Live as well
+					for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+					{
+						if (!isa<Constant>(*opItr))
+						{
+							genSet.insert(PairSet((*opItr)->getName(), LIVE));
+						}
+					}
+				}
+			}
+
+			// Phi node case to add BB to live
+			// if(isa<PHIInstruction>(*instItr))
+			// {
+			// 	if(genItr != genSet.end() || outItr != outMap[bb].end())
+			// 	{
+
+			// 	}
+			// }
+
+
+			// Check if it is in the gen set
+			if(genItr != genSet.end())
+			{
+				if((*genItr).second == FAINT)
+				{
+					// do stuff on faint
+				}
+				else
+				{
+					// do stuff on live
+					// insert the operands to the genSet as live varaibles
+					for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+					{
+						if (!isa<Constant>(*opItr))
+						{
+							genSet.insert(PairSet((*opItr)->getName(), LIVE));
+						}
+					}
+				}
+			}
+
+			if(genItr == genSet.end() && outItr == outMap[bb].end())
+			{
+				genSet.insert(PairSet(lhs, FAINT));
+			}
+
+			/*if(isa<TerminatorInst>(*instItr))
+			{
+				if (isa<ReturnInst>(*instItr))
+				{
+					for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+					{
+						if (!(isa<Constant>(*opItr)) && !(isa<BasicBlock>(*opItr)))
+						{
+							killSet.insert(PairSet((*opItr)->getName(), LIVE));
+							 errs() << "Name : " << (*opItr)->getName() << "\n";
+						}
+					}
+				}
+				continue;
+			}
+			bool inKill = killSet.find(PairSet(lhs, LIVE)) != killSet.end();
+			// if LHS not in Kill then add LHS to GEN
+			if(!inKill)
+			{
+				genSet.insert(PairSet(lhs, FAINT));
+			}*/
+			// if LHS is in (GEN U OUT) then add RHS to GEN
+			/*bool inGen = genSet.find(lhs) != genSet.end();
+			auto inOut = outMap[bb].find(lhs) != outMap[bb].end();
+			if(inGen || inOut)
+			{
+				for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+				{
+					if (!isa<Constant>(*opItr))
+					{
+						genSet.insert((*opItr)->getName());
+					}
+				}
+			}
+			// if LHS is in KILL then add RHS to KILL
+			if(inKill)
+			{
+				for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+				{
+					if (!isa<Constant>(*opItr))
+					{
+						killSet.insert((*opItr)->getName());
+					}
+				}
+			}*/
+		}
+		// FINAL FORMULA: IN = (OUT + GEN) - KILL
+		TypeSet outVars = outMap[bb];
+		TypeSet inVars;
+		// errs() << "Kill Set : " << killSet.size() << "\n";
+		// errs() << "Gen Set : " << genSet.size() << "\n";
+		for (auto outVar : outVars)
+		{
+			//if (killSet.count(outVar) == 0)
+			{
+				updated |= inVars.insert(outVar).second;
+			}
+		}
+		for (auto genVar : genSet)
+		{
+			//if (killSet.count(genVar) == 0)
+			{
+				updated |= inVars.insert(genVar).second;
+			}
+		}
+		// errs() << "InVars Set : " << inVars.size() << "\n";
+		
 		inMap[bb] = inVars;
 		return updated;
 	}
