@@ -1,7 +1,7 @@
 int ifTest(int a, int b)
 {
 	int x = a + 2;
-	int magic = a;
+	int magic = a + 3;
 	if(x > 5)
 	{
 		a = a *2;

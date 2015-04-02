@@ -4,11 +4,11 @@ int ifTest(int a)
 	int magic = 0;
 	if(x > 5)
 	{
-		magic = a *2;
+		magic = a * 2;
 	}
 	else
 	{
-		magic = x *2;
+		magic = x * 2;
 	}
 	return magic;
 }
