@@ -34,8 +34,13 @@ private:
 		os << "{ ";
 		for (auto v: state)
 		{
+			std::string state = "L";
 			if(v.second == FAINT)
-				os << v.first.str() << " ";
+			{
+				state = "F";
+				// os << v.first.str() << " ";
+			}
+			os << "( " << v.first.str() << ", " << state << ") ";
 			// os << v->getName() << " ";
 		}
 		os << "}";

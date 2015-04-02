@@ -1,7 +1,7 @@
 #ifndef CS380C_ASSIGNMENT4_DFAFRAMEWORK_H
 #define CS380C_ASSIGNMENT4_DFAFRAMEWORK_H
 
-enum STATUS {LIVE, FAINT};
+enum STATUS {LIVE, FAINT, UNKNOWN};
 
 #include <unordered_set>
 #include <unordered_map>
