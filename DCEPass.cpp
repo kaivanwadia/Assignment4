@@ -6,6 +6,7 @@
 #include "llvm/ADT/Statistic.h"
 #include "llvm/IR/Function.h"
 #include "llvm/Support/raw_ostream.h"
+#include <llvm/IR/Constants.h>
 
 using namespace cs380c;
 using namespace llvm;
@@ -35,7 +36,11 @@ bool DCEPass::runOnFunction(Function& f)
 		for (int i = toBeDeleted.size() - 1; i>=0; i--)
 		{
 			Instruction* inst = toBeDeleted[i];
-			errs() << "Deleting : " << inst->getName() << "\n";
+			APInt constValue = APInt(32, 0, false);
+			ConstantInt* constant = ConstantInt::get(inst->getContext(), constValue);
+			// for (auto useItr = inst->use_end() - 1; useItr  inst->use_begin())
+			// errs() << "Deleting : " << inst->getName() << "\n";
+			inst->replaceAllUsesWith(constant);
 			inst->eraseFromParent();
 		}
 	}
