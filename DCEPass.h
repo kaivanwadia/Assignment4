@@ -24,10 +24,10 @@ public:
 
 	void populateInitialSet(StringSet& set, Function &f);
 
-	const std::unordered_set<StringRef, StringRefHash, StringRefEqual>& getInValues(const llvm::BasicBlock* bb) const {
+	const StringSet& getInValues(const llvm::BasicBlock* bb) const {
 		return dfa->getInValues(bb);
 	}
-	const std::unordered_set<StringRef, StringRefHash, StringRefEqual>& getOutValues(const llvm::BasicBlock* bb) const {
+	const StringSet& getOutValues(const llvm::BasicBlock* bb) const {
 		return dfa->getOutValues(bb);
 	}
 
