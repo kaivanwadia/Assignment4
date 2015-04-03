@@ -59,8 +59,9 @@ public:
 				for(auto bbItr = succ_begin(bb); bbItr != succ_end(bb); bbItr++)
 				{
 					if(bbOuter == bbItr) // Same basic block just continue
+					{
 						continue;
-
+					}
 					auto checkPtr = inMap[*bbItr].find(variable);
 					if(checkPtr == inMap[*bbItr].end())
 					{
