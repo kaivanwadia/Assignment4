@@ -69,6 +69,7 @@ public:
 				}
 				if(present)
 				{
+					printf("%s :added ", variable.str().c_str());
 					intersectedSet.insert(variable);
 				}
 			}
@@ -92,7 +93,7 @@ public:
 		}
 
 		bbVariables = intersectedSet;
-		
+		printf("Exiting DoMeet\n");
 		return updated;
 	}
 };

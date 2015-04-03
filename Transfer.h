@@ -56,8 +56,9 @@ public:
 			}
 			StringRef lhs = (*instItr).getName();
 			bool inOutSet = outSet.count(lhs) != 0? true : false;
+			bool inKillSet = killSet.count(lhs) != 0? true : false;
 			// If lhs is not in outSet then add rhs to kill
-			if (!inOutSet)
+			if (!inOutSet || inKillSet)
 			{
 				for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
 				{

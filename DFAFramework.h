@@ -98,6 +98,11 @@ public:
 		{
 			bb = &(f.back());
 			this->outMap.insert(std::make_pair(bb, this->initialSet));
+			for(auto& basicBlock : f)
+			{
+				this->outMap.insert(std::make_pair(&basicBlock, this->initialSet));
+				this->inMap.insert(std::make_pair(&basicBlock, this->initialSet));
+			}
 		}
 		workList.enqueue(bb, postOrderMap[bb]);
 		bool first = true;
