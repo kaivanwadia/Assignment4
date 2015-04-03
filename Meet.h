@@ -36,6 +36,10 @@ public:
 	bool doMeet(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
 		bool updated = false;
+		if (bb->getTerminator()->getNumSuccessors() == 0)
+		{
+			return updated;
+		}
 		printf("In doMeet of DCEMeet\n");
 		auto itr = outMap.find(bb);
 		if(itr == outMap.end())
