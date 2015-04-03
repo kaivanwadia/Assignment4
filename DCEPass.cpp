@@ -14,14 +14,33 @@ STATISTIC(NumInstRemoved, "The # of dead instructions removed by DCEPass");
 
 bool DCEPass::runOnFunction(Function& f)
 {
-
 	StringSet initialSet;
 	populateInitialSet(initialSet, f);
 	dfa->setInitialValues(initialSet);
 	dfa->doDFA(f);
 	DataFlowAnnotator<DCEPass> annotator(*this, errs());
 	annotator.print(f);
-	return false;
+
+	for (auto& bb : f)
+	{
+		std::vector<Instruction*> toBeDeleted;
+		StringSet inFaintSet = this->getInValues(&bb);
+		for (auto& inst : bb)
+		{
+			if (inFaintSet.count(inst.getName()) != 0)
+			{
+				toBeDeleted.push_back(&inst);
+			}
+		}
+		for (int i = toBeDeleted.size() - 1; i>=0; i--)
+		{
+			Instruction* inst = toBeDeleted[i];
+			errs() << "Deleting : " << inst->getName() << "\n";
+			inst->eraseFromParent();
+		}
+	}
+	annotator.print(f);	
+	return true;
 }
 
 void DCEPass::populateInitialSet(StringSet& set, Function& f)
