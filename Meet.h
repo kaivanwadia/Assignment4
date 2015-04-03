@@ -54,7 +54,7 @@ public:
 				bool present = true;
 				for(auto bbItr = succ_begin(bb); bbItr != succ_end(bb); bbItr++)
 				{
-					if(bbOuter == bbIter) // Same basic block just continue
+					if(bbOuter == bbItr) // Same basic block just continue
 						continue;
 
 					auto checkPtr = inMap[*bbItr].find(variable);
@@ -79,7 +79,7 @@ public:
 			updated = false;
 			for(auto variable : bbVariables)
 			{
-				auto checkPtr = intersectedSet.find(bbVariables);
+				auto checkPtr = intersectedSet.find(variable);
 				if(checkPtr == intersectedSet.end())
 				{
 					updated = true;
