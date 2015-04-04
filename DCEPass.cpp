@@ -32,6 +32,7 @@ bool DCEPass::runOnFunction(Function& f)
 bool DCEPass::deleteInstructions(Function& f)
 {
 	bool changed = false;
+	// errs() << "=============Start Deletion================\n";
 	for (auto& bb : f)
 	{
 		std::vector<Instruction*> toBeDeleted;
@@ -68,9 +69,13 @@ bool DCEPass::deleteInstructions(Function& f)
 				inst->replaceAllUsesWith(replacement);
 				inst->eraseFromParent();
 			}
+			// DataFlowAnnotator<DCEPass> annotator(*this, errs());
+			// annotator.print(f);
+			// errs() << "============================\n";
 		}
 		toBeDeleted.clear();
 	}
+	// errs() << "=============End Deletion================\n";
 	return changed;
 }
 
