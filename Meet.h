@@ -35,66 +35,69 @@ public:
 	DCEMeet() : Meet<llvm::StringRef, StringRefHash, StringRefEqual>() {}
 	bool doMeet(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
+		printf("In doMeet of DCEMeet\n");
 		bool updated = false;
 		if (bb->getTerminator()->getNumSuccessors() == 0)
 		{
 			return updated;
 		}
-		printf("In doMeet of DCEMeet\n");
 		auto itr = outMap.find(bb);
 		if(itr == outMap.end())
 		{
-			updated = true;
+			updated |= true;
 			itr = outMap.insert(std::make_pair(bb, TypeSet())).first;
 		}
-
 		auto& bbVariables = itr->second;
 		StringSet intersectedSet;
 		for(auto bbOuter = succ_begin(bb); bbOuter != succ_end(bb); bbOuter++)
 		{
+			if (inMap.find(*bbOuter) == inMap.end())
+			{
+				// errs() << "No map for BB Outer : " << (*bbOuter)->getName() << "\n";
+				continue;
+			}
 			auto outerVariables = inMap[*bbOuter];
 			for(auto const variable : outerVariables)
 			{
 				bool present = true;
-				for(auto bbItr = succ_begin(bb); bbItr != succ_end(bb); bbItr++)
+				for(auto bbInner = succ_begin(bb); bbInner != succ_end(bb); bbInner++)
 				{
-					if(bbOuter == bbItr) // Same basic block just continue
+					if(bbOuter == bbInner) // Same basic block just continue
 					{
 						continue;
 					}
-					auto checkPtr = inMap[*bbItr].find(variable);
-					if(checkPtr == inMap[*bbItr].end())
+					if (inMap.find(*bbInner) == inMap.end())
+					{
+						// errs() << "No map for BB Inner : " << (*bbInner)->getName() << "\n";
+						continue;
+					}
+					if (inMap[*bbInner].count(variable) == 0) // Could not find variable. Don't put in intersectedSet
 					{
 						present = false;
 					}
 				}
 				if(present)
 				{
-					printf("%s :added ", variable.str().c_str());
+					// printf("%s :added ", variable.str().c_str());
 					intersectedSet.insert(variable);
 				}
 			}
 		}
-
 		if(intersectedSet.size() != bbVariables.size())
 		{
-			updated = true;
+			updated |= true;
 		}
 		else
 		{
-			updated = false;
 			for(auto variable : bbVariables)
 			{
-				auto checkPtr = intersectedSet.find(variable);
-				if(checkPtr == intersectedSet.end())
+				if(intersectedSet.count(variable) == 0)
 				{
-					updated = true;
+					updated |= true;
 				}
 			}
 		}
-
 		bbVariables = intersectedSet;
-		printf("Exiting DoMeet\n");
 		return updated;
 	}
 };

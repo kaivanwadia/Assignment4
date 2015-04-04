@@ -84,7 +84,7 @@ public:
 
 	void doDFA(llvm::Function& f)
 	{
-		// printf("In doDFA\n");
+		printf("In doDFA\n");
 		computePostOrder(f);
 		WorkList<llvm::BasicBlock*> workList = WorkList<llvm::BasicBlock*>(postOrderMap.size(), topDown);
 		llvm::BasicBlock* bb;
@@ -98,11 +98,6 @@ public:
 		{
 			bb = &(f.back());
 			this->outMap.insert(std::make_pair(bb, this->initialSet));
-			for(auto& basicBlock : f)
-			{
-				this->outMap.insert(std::make_pair(&basicBlock, this->initialSet));
-				this->inMap.insert(std::make_pair(&basicBlock, this->initialSet));
-			}
 		}
 		workList.enqueue(bb, postOrderMap[bb]);
 		bool first = true;
@@ -112,15 +107,29 @@ public:
 			auto currBB = workList.dequeue();
 			errs() << "=======================================\n";
 			errs() << "Analyzing BB : " << currBB->getName() << "\n";
+			// printSet(inMap[currBB], "In");
+			// printSet(outMap[currBB], "Out");
 			bool meetChangedValue = this->meet->doMeet(currBB, this->inMap, this->outMap);
+			// printSet(outMap[currBB], "New Out");
 			if (!meetChangedValue && !first)
 			{
 				continue;
 			}
 			first = false;
 			bool transferChangedValue = this->transfer->doTransfer(currBB, this->inMap, this->outMap);
+			// printSet(inMap[currBB], "New In");
 			this->addToWorklist(currBB, workList);
 		}
+	}
+
+	static void printSet(TypeSet& set, std::string str)
+	{
+		errs() << str << " : {";
+		for (auto& inVar : set)
+		{
+			errs() << " " << inVar;
+		}
+		errs() << " }\n";
 	}
 
 	template <typename WorkListType>

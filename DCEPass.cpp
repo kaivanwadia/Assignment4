@@ -2,11 +2,12 @@
 
 #include "DCEPass.h"
 #include "DataFlowAnnotator.h"
-#include <unordered_set>
 #include "llvm/ADT/Statistic.h"
 #include "llvm/IR/Function.h"
 #include "llvm/Support/raw_ostream.h"
 #include <llvm/IR/Constants.h>
+#include <llvm/IR/Value.h>
+#include <llvm/IR/Instructions.h>
 
 using namespace cs380c;
 using namespace llvm;
@@ -22,6 +23,15 @@ bool DCEPass::runOnFunction(Function& f)
 	DataFlowAnnotator<DCEPass> annotator(*this, errs());
 	annotator.print(f);
 
+	// Delete Instructions
+	bool changed = this->deleteInstructions(f);
+	annotator.print(f);
+	return true;
+}
+
+bool DCEPass::deleteInstructions(Function& f)
+{
+	bool changed = false;
 	for (auto& bb : f)
 	{
 		std::vector<Instruction*> toBeDeleted;
@@ -31,6 +41,7 @@ bool DCEPass::runOnFunction(Function& f)
 			if (inFaintSet.count(inst.getName()) != 0)
 			{
 				toBeDeleted.push_back(&inst);
+				changed = true;
 			}
 		}
 		for (int i = toBeDeleted.size() - 1; i>=0; i--)
@@ -38,14 +49,29 @@ bool DCEPass::runOnFunction(Function& f)
 			Instruction* inst = toBeDeleted[i];
 			APInt constValue = APInt(32, 0, false);
 			ConstantInt* constant = ConstantInt::get(inst->getContext(), constValue);
-			// for (auto useItr = inst->use_end() - 1; useItr  inst->use_begin())
-			// errs() << "Deleting : " << inst->getName() << "\n";
-			inst->replaceAllUsesWith(constant);
-			inst->eraseFromParent();
+			errs() << "Deleting : " << inst->getName() << "\t" << "Type : ";
+			inst->getType()->print(errs());
+			errs() <<"\n";
+			if (isa<PHINode>(inst))
+			{
+				PHINode* phiInst = dyn_cast<PHINode>(inst);
+				for (int operandNo = phiInst->getNumIncomingValues() -1; operandNo >= 0; operandNo--)
+				{
+					// errs() << "Removing phi op : " << phiInst->getIncomingValue(operandNo)->getName() << "\n";
+					// errs() << "Removed : " << phiInst->removeIncomingValue(operandNo, true)->getName() << "\n";
+					phiInst->removeIncomingValue(operandNo, true);
+				}
+			}
+			else
+			{
+				UndefValue* replacement = UndefValue::get(inst->getType());
+				inst->replaceAllUsesWith(replacement);
+				inst->eraseFromParent();
+			}
 		}
+		toBeDeleted.clear();
 	}
-	annotator.print(f);	
-	return true;
+	return changed;
 }
 
 void DCEPass::populateInitialSet(StringSet& set, Function& f)

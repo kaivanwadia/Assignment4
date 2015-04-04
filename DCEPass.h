@@ -22,6 +22,8 @@ public:
 
 	bool runOnFunction(llvm::Function&);
 
+	bool deleteInstructions(llvm::Function&);
+
 	void populateInitialSet(StringSet& set, Function &f);
 
 	const StringSet& getInValues(const llvm::BasicBlock* bb) const {

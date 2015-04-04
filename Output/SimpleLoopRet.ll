@@ -1,20 +1,23 @@
-; ModuleID = './Output/SimpleLoopRet.bc'
+; ModuleID = 'Output/SimpleLoopRet.bc'
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-unknown-linux-gnu"
 
 ; Function Attrs: nounwind uwtable
 define i32 @sum(i32 %a, i32 %b) #0 {
 entry:
+  %mul = mul nsw i32 %b, 2
   br label %for.cond
 
 for.cond:                                         ; preds = %for.inc, %entry
   %i.0 = phi i32 [ %a, %entry ], [ %inc, %for.inc ]
-  %res.0 = phi i32 [ 1, %entry ], [ %mul, %for.inc ]
+  %res.0 = phi i32 [ 1, %entry ], [ %mul1, %for.inc ]
+  %x.0 = phi i32 [ %mul, %entry ], [ %mul2, %for.inc ]
   %cmp = icmp slt i32 %i.0, %b
   br i1 %cmp, label %for.body, label %for.end
 
 for.body:                                         ; preds = %for.cond
-  %mul = mul nsw i32 %res.0, %i.0
+  %mul1 = mul nsw i32 %res.0, %i.0
+  %mul2 = mul nsw i32 %x.0, 2
   br label %for.inc
 
 for.inc:                                          ; preds = %for.body
