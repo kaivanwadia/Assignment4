@@ -7,31 +7,24 @@ Q. What is the direction of the dataflow analysis?
 A. Bottom up
 
 Q. What is the meet operator?
-A. Union (A special union taking into consideration phi nodes)
+A. Intersection
 
 Q. What are the lattice elements?
-A. Top, Bottom, Live and Faint
+A. Top (Undefined), Bottom (Live), Faint
 
 Q. What are the values of top and bottom?
-A. 
+A. Top is undefined and Bottom is Live
 
 Q. How do you initialize the iterative algorithm?
-A. Empty Set
+A. Universal Set
 
 Q. Are dataflow facts required at BB level or instruction level?
 A. Basic block.
 
 Q. What should you do if your analysis works on a different level?
-A. Have the map do something different
+A. Have the map do something different.
 
 Q. What are the transfer functions ?
-A. This is the question!
-
-
-Pair structure : 
-
-If TerminatorInst and ReturnInst then rhs is live
-If LHS is faint then rhs is faint
-If LHS is live then rhs is live
-
-Every LHS is added to kill
+A. 	If Terminator Instruction then add RHS to Kill Set
+	If LHS is not in Faint Set or is in Kill Set then add RHS to Kill Set
+	IN = (OUT - KILL) + GEN
