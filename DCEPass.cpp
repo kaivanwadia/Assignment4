@@ -48,9 +48,9 @@ bool DCEPass::deleteInstructions(Function& f)
 		for (int i = toBeDeleted.size() - 1; i>=0; i--)
 		{
 			Instruction* inst = toBeDeleted[i];
-			// errs() << "Deleting : " << inst->getName() << "\t" << "Type : ";
-			// inst->getType()->print(errs());
-			// errs() <<"\n";
+			errs() << "Deleting : " << inst->getName() << "\t" << "Type : ";
+			inst->getType()->print(errs());
+			errs() <<"\n";
 			if (isa<PHINode>(inst))
 			{
 				PHINode* phiInst = dyn_cast<PHINode>(inst);
@@ -91,6 +91,10 @@ void DCEPass::populateInitialSet(StringSet& set, Function& f)
 				set.insert(lhs);
 			}
 		}
+	}
+	for (auto itr = f.getArgumentList().begin(); itr != f.getArgumentList().end(); ++itr)
+	{
+		set.insert((*itr).getName());
 	}
 }
 
