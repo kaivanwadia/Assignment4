@@ -48,11 +48,9 @@ bool DCEPass::deleteInstructions(Function& f)
 		for (int i = toBeDeleted.size() - 1; i>=0; i--)
 		{
 			Instruction* inst = toBeDeleted[i];
-			APInt constValue = APInt(32, 0, false);
-			ConstantInt* constant = ConstantInt::get(inst->getContext(), constValue);
-			errs() << "Deleting : " << inst->getName() << "\t" << "Type : ";
-			inst->getType()->print(errs());
-			errs() <<"\n";
+			// errs() << "Deleting : " << inst->getName() << "\t" << "Type : ";
+			// inst->getType()->print(errs());
+			// errs() <<"\n";
 			if (isa<PHINode>(inst))
 			{
 				PHINode* phiInst = dyn_cast<PHINode>(inst);
@@ -62,12 +60,14 @@ bool DCEPass::deleteInstructions(Function& f)
 					// errs() << "Removed : " << phiInst->removeIncomingValue(operandNo, true)->getName() << "\n";
 					phiInst->removeIncomingValue(operandNo, true);
 				}
+				NumInstRemoved++;
 			}
 			else
 			{
 				UndefValue* replacement = UndefValue::get(inst->getType());
 				inst->replaceAllUsesWith(replacement);
 				inst->eraseFromParent();
+				NumInstRemoved++;
 			}
 			// DataFlowAnnotator<DCEPass> annotator(*this, errs());
 			// annotator.print(f);

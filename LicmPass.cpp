@@ -14,7 +14,19 @@ STATISTIC(NumInstHoisted, "The # of instructions hoisted by LicmPass");
 bool LicmPass::runOnLoop(llvm::Loop* loop, llvm::LPPassManager& lpm)
 {
 	// Remove the following two lines before you write down your own codes
-	errs() << "Hello, " << *loop << "\n";
+	LoopInfo &loopInfo = getAnalysis<LoopInfo>();
+	errs() << "Hello, \n" << *loop << "\n";
+	// Iterate through the loop block. Need to figure out how to move something outside
+	// a loop. The dataflow problem 'doDfa()' is to figure out what is loop invariant. 
+	// We might have to add another doDfa() function which takes in 3 arguments - Loop , LoopInfo and LPPassManager
+	// Unless we can access the LoopInfo directly and don't need to pass it.
+	for (Loop::block_iterator bbItr = loop->block_begin(); bbItr != loop->block_end(); ++bbItr)
+	{
+		if (loopInfo.getLoopFor(*bbItr) == loop)
+		{
+			errs() << (*bbItr)->getName() << "\n";
+		}
+	}
 	return false;
 }
 

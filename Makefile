@@ -2,7 +2,7 @@ CXXFLAGS = -w $(shell llvm-config --cxxflags) -fno-rtti
 
 all: dce-pass.so licm-pass.so
 dce-pass: dce-pass.so
-licm: licm-pass.so
+licm-pass: licm-pass.so
 
 DCEPass.o: DCEPass.cpp DCEPass.h Makefile
 	$(CXX) $(CXXFLAGS) DCEPass.cpp -c -o $@
