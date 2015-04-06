@@ -20,13 +20,26 @@ bool LicmPass::runOnLoop(llvm::Loop* loop, llvm::LPPassManager& lpm)
 	// a loop. The dataflow problem 'doDfa()' is to figure out what is loop invariant. 
 	// We might have to add another doDfa() function which takes in 3 arguments - Loop , LoopInfo and LPPassManager
 	// Unless we can access the LoopInfo directly and don't need to pass it.
+	Instruction* toDelete;
 	for (Loop::block_iterator bbItr = loop->block_begin(); bbItr != loop->block_end(); ++bbItr)
 	{
 		if (loopInfo.getLoopFor(*bbItr) == loop)
 		{
 			errs() << (*bbItr)->getName() << "\n";
+			// for (auto instItr = (*bbItr)->begin())
+			for (auto& inst : *(*bbItr))
+			{
+				errs() << "Iterating over instruction : " << inst.getName() << " \n";
+				if (inst.getName().str() == "mul")
+				{
+					errs() << "Inside If \n";
+					toDelete = &inst;
+					// inst.moveBefore(loop->getLoopPreheader()->getTerminator());
+				}
+			}
 		}
 	}
+	toDelete->moveBefore(loop->getLoopPreheader()->getTerminator());
 	return false;
 }
 
