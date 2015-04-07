@@ -30,13 +30,54 @@ public:
 class LICMMeet: public Meet<llvm::Instruction*>
 {
 public:
-	//using InstSet = std::unordered_set<Instruction*, std::hash<llvm::Instruction*, std::equal_to<llvm::Instruction*> >;
+	using InstSet = std::unordered_set<Instruction*, std::hash<llvm::Instruction*>, std::equal_to<llvm::Instruction*> >;
 	LICMMeet() : Meet<llvm::Instruction*>() {}
 
 	bool doMeet( const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
+		printf("In doMeet");
 
-		return false;
+		bool updated = false;
+		auto itr = inMap.find(bb);
+		if(itr == inMap.end())
+		{
+			updated = true;
+			itr = inMap.insert(std::make_pair(bb, InstSet())).first;	
+		}
+
+		auto& instSet = itr->second;
+		InstSet newSet;
+		for(auto bbItr = pred_begin(bb); bbItr != pred_end(bb); bbItr++)
+		{
+			auto predItr = outMap.find(*bbItr);
+			if(predItr == outMap.end())
+			{
+				continue;
+			}
+			auto predVars = outMap[*bbItr];
+			for(Instruction* inst : predVars)
+			{
+				newSet.insert(inst);
+			}
+		}
+
+		if(newSet.size() != instSet.size())
+		{
+			updated |= true;
+		}
+		else
+		{
+			for(auto variable : instSet)
+			{
+				if(newSet.count(variable) == 0)
+				{
+					updated |= true;
+				}
+			}
+		}
+		
+
+		return updated;
 	}
 
 };
