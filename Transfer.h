@@ -2,6 +2,7 @@
 #define CS380C_ASSIGNMENT4_TRANSFER_H
 
 #include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Dominators.h>
 #include "DFAFramework.h"
 #include <unordered_set>
 #include <unordered_map>
@@ -19,6 +20,7 @@ class Transfer
 {
 private:
 public:
+	const DominatorTreeWrapperPass* dominatorInfo;
 	using TypeSet = std::unordered_set<T, HasherType, EqualType>;
 	using DFAMap = std::unordered_map<const llvm::BasicBlock*, TypeSet>;
 	Transfer() {}
@@ -34,6 +36,9 @@ public:
 
 	bool doTransfer( const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
+		bool updated = false;
+		printf("In doTransfer of LICMTransfer\n");
+		errs() << "\n";
 		return false;
 	}
 };

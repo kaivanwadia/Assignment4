@@ -10,10 +10,11 @@ enum STATUS {LIVE, FAINT, UNKNOWN};
 #include "Worklist.h"
 #include "Hasher.h"
 #include "Equal.h"
-#include "llvm/Analysis/LoopInfo.h"
+#include <llvm/Analysis/LoopInfo.h>
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/CFG.h>
+#include <llvm/Analysis/LoopPass.h>
 #include <queue>
 #include <stack>
 
@@ -125,9 +126,10 @@ public:
 
 	void doDFA(llvm::Loop* loop, llvm::LPPassManager& lpm, llvm::LoopInfo& loopInfo)
 	{
-		printf("In doDFA on Loop\n");
 		llvm::Function* f = (loop->getLoopPreheader()->getParent());
+		printf("In doDFA for Loop\n");
 		errs() << "Function name : " << f->getName() << "\n";
+
 		computePostOrder(*f);
 		WorkList<llvm::BasicBlock*> workList = WorkList<llvm::BasicBlock*>(postOrderMap.size(), topDown);
 		llvm::BasicBlock* bb;
@@ -144,8 +146,8 @@ public:
 			{
 				continue;
 			}
-			// errs() << "=======================================\n";
-			// errs() << "Analyzing BB : " << currBB->getName() << "\n";
+			errs() << "=======================================\n";
+			errs() << "Analyzing BB : " << currBB->getName() << "\n";
 			// printSet(inMap[currBB], "In");
 			// printSet(outMap[currBB], "Out");
 			bool meetChangedValue = this->meet->doMeet(currBB, this->inMap, this->outMap);
@@ -159,6 +161,11 @@ public:
 			// printSet(inMap[currBB], "New In");
 			this->addToWorklist(currBB, workList);
 		}
+	}
+
+	void setDominatorTree(DominatorTreeWrapperPass* _domInfo)
+	{
+		this->transfer->dominatorInfo = _domInfo;
 	}
 
 	static void printSet(TypeSet& set, std::string str)
