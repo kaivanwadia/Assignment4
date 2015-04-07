@@ -23,7 +23,7 @@ namespace cs380c
 // T is the type on which the analysis is being done. For example it can be done on Instructions, 
 // Expressions, Definitions etc
 // , typename HasherType, typename EqualType
-template <typename T, typename HasherType, typename EqualType>
+template <typename T, typename HasherType = std::hash<T>, typename EqualType = std::equal_to<T> >
 class DFAFramework {
 private:
 	bool topDown;

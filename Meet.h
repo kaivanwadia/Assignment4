@@ -15,7 +15,7 @@ using namespace llvm;
 
 namespace cs380c
 {
-template<typename T, typename HasherType, typename EqualType>
+template<typename T, typename HasherType = std::hash<T>, typename EqualType = std::equal_to<T> >
 class Meet
 {
 private:
@@ -25,6 +25,20 @@ public:
 	Meet() {}
 	// Does the Meet operation on a BasicBlock. Returns an unordered set of the meet result.
 	virtual bool doMeet(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap) = 0;
+};
+
+class LICMMeet: public Meet<llvm::Instruction*>
+{
+public:
+	//using InstSet = std::unordered_set<Instruction*, std::hash<llvm::Instruction*, std::equal_to<llvm::Instruction*> >;
+	LICMMeet() : Meet<llvm::Instruction*>() {}
+
+	bool doMeet( const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
+	{
+
+		return false;
+	}
+
 };
 
 class DCEMeet: public Meet<llvm::StringRef, StringRefHash, StringRefEqual>

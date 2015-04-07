@@ -14,7 +14,7 @@ using namespace llvm;
 namespace cs380c
 {
 
-template <typename T, typename HasherType, typename EqualType>
+template <typename T, typename HasherType = std::hash<T>, typename EqualType = std::equal_to<T> >
 class Transfer
 {
 private:
@@ -24,6 +24,18 @@ public:
 	Transfer() {}
 	// Does the Transfer operation on a BasicBlock. Returns a bool of the transfer result.
 	virtual bool doTransfer(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap) = 0;
+};
+
+class LICMTransfer : public Transfer<llvm::Instruction*>
+{
+public:
+	LICMTransfer() : Transfer<llvm::Instruction*>() {}
+
+	bool doTransfer( const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
+	{
+
+		return false;
+	}
 };
 
 class DCETransfer: public Transfer<llvm::StringRef, StringRefHash, StringRefEqual>

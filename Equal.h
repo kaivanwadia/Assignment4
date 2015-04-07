@@ -12,22 +12,13 @@ public:
 	virtual size_t operator() (const T &lhsElem, const T &rhsElem) const = 0;
 };
 
+
 class StringRefEqual : Equal<llvm::StringRef>
 {
 public:
 	size_t operator() (const llvm::StringRef &lhsElem, const llvm::StringRef &rhsElem) const
 	{
 		return lhsElem.str().compare(rhsElem.str()) == 0;
-	}
-};
-
-class StringRefEqualPair : Equal<std::pair<llvm::StringRef, STATUS>>
-{
-public:
-	using PairSet = std::pair<llvm::StringRef, STATUS>;
-	size_t operator() (const PairSet &lhsElem, const PairSet &rhsElem) const
-	{
-		return lhsElem.first.str().compare(rhsElem.first.str()) == 0;
 	}
 };
 

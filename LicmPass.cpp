@@ -5,6 +5,8 @@
 #include "llvm/ADT/Statistic.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/Support/raw_ostream.h"
+#include <unordered_set>
+#include "Equal.h"
 
 using namespace cs380c;
 using namespace llvm;
@@ -21,6 +23,8 @@ bool LicmPass::runOnLoop(llvm::Loop* loop, llvm::LPPassManager& lpm)
 	// We might have to add another doDfa() function which takes in 3 arguments - Loop , LoopInfo and LPPassManager
 	// Unless we can access the LoopInfo directly and don't need to pass it.
 	Instruction* toDelete;
+	Instruction* toDelete1;
+	std::unordered_set<llvm::Instruction*> setTemp;
 	for (Loop::block_iterator bbItr = loop->block_begin(); bbItr != loop->block_end(); ++bbItr)
 	{
 		if (loopInfo.getLoopFor(*bbItr) == loop)
@@ -34,12 +38,17 @@ bool LicmPass::runOnLoop(llvm::Loop* loop, llvm::LPPassManager& lpm)
 				{
 					errs() << "Inside If \n";
 					toDelete = &inst;
+					toDelete1 = &inst;
+					setTemp.insert(&inst);
+					errs() << " size : " << setTemp.size() << " \n";
+					setTemp.insert(&inst);
+					errs() << " size again: " << setTemp.size() << " \n";
 					// inst.moveBefore(loop->getLoopPreheader()->getTerminator());
 				}
 			}
 		}
 	}
-	toDelete->moveBefore(loop->getLoopPreheader()->getTerminator());
+	//toDelete->moveBefore(loop->getLoopPreheader()->getTerminator());
 	return false;
 }
 
