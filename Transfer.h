@@ -29,11 +29,11 @@ public:
 class LICMTransfer : public Transfer<llvm::Instruction*>
 {
 public:
+	using InstSet = std::unordered_set<llvm::Instruction*, std::hash<llvm::Instruction*>, std::equal_to<llvm::Instruction*>>;
 	LICMTransfer() : Transfer<llvm::Instruction*>() {}
 
 	bool doTransfer( const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
-
 		return false;
 	}
 };

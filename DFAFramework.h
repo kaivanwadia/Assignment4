@@ -10,6 +10,7 @@ enum STATUS {LIVE, FAINT, UNKNOWN};
 #include "Worklist.h"
 #include "Hasher.h"
 #include "Equal.h"
+#include "llvm/Analysis/LoopInfo.h"
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/CFG.h>
@@ -84,7 +85,7 @@ public:
 
 	void doDFA(llvm::Function& f)
 	{
-		printf("In doDFA\n");
+		printf("In doDFA on Function\n");
 		computePostOrder(f);
 		WorkList<llvm::BasicBlock*> workList = WorkList<llvm::BasicBlock*>(postOrderMap.size(), topDown);
 		llvm::BasicBlock* bb;
@@ -107,6 +108,44 @@ public:
 			auto currBB = workList.dequeue();
 			errs() << "=======================================\n";
 			errs() << "Analyzing BB : " << currBB->getName() << "\n";
+			// printSet(inMap[currBB], "In");
+			// printSet(outMap[currBB], "Out");
+			bool meetChangedValue = this->meet->doMeet(currBB, this->inMap, this->outMap);
+			// printSet(outMap[currBB], "New Out");
+			if (!meetChangedValue && !first)
+			{
+				continue;
+			}
+			first = false;
+			bool transferChangedValue = this->transfer->doTransfer(currBB, this->inMap, this->outMap);
+			// printSet(inMap[currBB], "New In");
+			this->addToWorklist(currBB, workList);
+		}
+	}
+
+	void doDFA(llvm::Loop* loop, llvm::LPPassManager& lpm, llvm::LoopInfo& loopInfo)
+	{
+		printf("In doDFA on Loop\n");
+		llvm::Function* f = (loop->getLoopPreheader()->getParent());
+		errs() << "Function name : " << f->getName() << "\n";
+		computePostOrder(*f);
+		WorkList<llvm::BasicBlock*> workList = WorkList<llvm::BasicBlock*>(postOrderMap.size(), topDown);
+		llvm::BasicBlock* bb;
+		// Setting up initial basic block
+		bb = *(loop->block_begin());
+		this->outMap.insert(std::make_pair(bb, this->initialSet));
+		workList.enqueue(bb, postOrderMap[bb]);
+		bool first = true;
+		// Start iterating over the worklist till empty
+		while (!workList.empty())
+		{
+			auto currBB = workList.dequeue();
+			if (!loop->contains(currBB))
+			{
+				continue;
+			}
+			// errs() << "=======================================\n";
+			// errs() << "Analyzing BB : " << currBB->getName() << "\n";
 			// printSet(inMap[currBB], "In");
 			// printSet(outMap[currBB], "Out");
 			bool meetChangedValue = this->meet->doMeet(currBB, this->inMap, this->outMap);

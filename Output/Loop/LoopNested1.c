@@ -1,4 +1,4 @@
-int loop(int a, int b)
+int nested(int a, int b)
 {
 	int x = a*3;
 	int y = a*2;

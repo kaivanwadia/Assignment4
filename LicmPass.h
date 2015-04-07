@@ -13,8 +13,8 @@ private:
 	// Private fields go here
 public:
 	static char ID;
+	using InstSet = std::unordered_set<llvm::Instruction*, std::hash<llvm::Instruction*>, std::equal_to<llvm::Instruction*>>;
 	DFAFramework<llvm::Instruction*>* dfa;
-	// Just making edits
 	LicmPass() : llvm::LoopPass(ID) {
 		dfa = new DFAFramework<llvm::Instruction*>(true, new LICMMeet(), new LICMTransfer());
 	}
