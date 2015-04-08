@@ -1,4 +1,6 @@
-int nested(int a, int b, int c)
+#include <stdio.h>
+
+int sum(int a, int b, int c)
 {
 	int x = c*3;
 	int y = c*2;

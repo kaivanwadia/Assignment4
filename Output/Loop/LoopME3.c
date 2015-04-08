@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int sum(int a, int b, int c)
 {
 	int x = a + 2;

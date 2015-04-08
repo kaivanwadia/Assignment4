@@ -1,8 +1,9 @@
+#include <stdio.h>
+
 int sum(int a, int b, int c)
 {
-	int c = b*2;
 	int x = a*2;
-	int y = 0;
+	int y = c + 2;
 	for (int i = 0; i < b; i++)
 	{
 		x = a+b;

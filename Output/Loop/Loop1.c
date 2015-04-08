@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int sum(int a, int b)
 {
 	int x = 2;
