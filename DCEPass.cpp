@@ -18,6 +18,8 @@ bool DCEPass::runOnFunction(Function& f)
 {
 	StringSet initialSet;
 	populateInitialSet(initialSet, f);
+	delete dfa;
+	dfa = new DFAFramework<StringRef, StringRefHash, StringRefEqual>(false, new DCEMeet(), new DCETransfer());
 	dfa->setInitialValues(initialSet);
 	dfa->doDFA(f);
 	DataFlowAnnotator<DCEPass> annotator(*this, errs());

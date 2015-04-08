@@ -20,6 +20,8 @@ bool LicmPass::runOnLoop(llvm::Loop* loop, llvm::LPPassManager& lpm)
 {
 	errs() << "In runOnLoop\n";
 	InstSet initialSet;
+	delete dfa;
+	dfa = new DFAFramework<llvm::Instruction*>(true, new LICMMeet(), new LICMTransfer());
 	dfa->setInitialValues(initialSet);
 	// LoopInfo& loopInfo = getAnalysis<LoopInfo>();
 	DominatorTreeWrapperPass& dominatorInfo = getAnalysis<DominatorTreeWrapperPass>();

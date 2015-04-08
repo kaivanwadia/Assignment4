@@ -7,8 +7,8 @@ int nested(int a, int b)
 		x = a*2;
 		for (int j = 0; j < a; j++)
 		{
-			y = y+2;
+			y = b+2;
 		}
 	}
-	return b*x;
+	return x*y;
 }

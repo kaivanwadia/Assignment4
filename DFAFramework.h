@@ -129,10 +129,12 @@ public:
 	{
 		llvm::Function* f = (loop->getLoopPreheader()->getParent());
 		printf("In doDFA for Loop\n");
-		// errs() << "Function name : " << f->getName() << "\n";
-		// loop->print(errs());
-		// errs() << "\n";
-		// errs() << "Preheader : " << loop->getLoopPreheader()->getName() << "\n";
+		errs() << "inMap Size : " << inMap.size() << "\n";
+		errs() << "outMap Size : " << outMap.size() << "\n";
+		errs() << "Function name : " << f->getName() << "\n";
+		loop->print(errs());
+		errs() << "\n";
+		errs() << "Preheader : " << loop->getLoopPreheader()->getName() << "\n";
 		// SmallVector<BasicBlock*, 4> exitingBlocks;
 		// loop->getExitingBlocks(exitingBlocks);
 		// for (auto it = exitingBlocks.begin(); it != exitingBlocks.end(); ++it)
@@ -158,23 +160,25 @@ public:
 		while (!workList.empty())
 		{
 			auto currBB = workList.dequeue();
-			if (!loop->contains(currBB))
-			{
-				continue;
-			}
 			errs() << "=======================================\n";
 			errs() << "Analyzing BB : " << currBB->getName() << "\n";
+			if (!loop->contains(currBB))
+			{
+				errs() << "Not Contained in Loop\n";
+				continue;
+			}
 			// printSet(inMap[currBB], "In");
 			// printSet(outMap[currBB], "Out");
 			bool meetChangedValue = this->meet->doMeet(currBB, this->inMap, this->outMap);
-			// printSet(outMap[currBB], "New Out");
+			errs() << "Meet Changed : " << meetChangedValue << "\n";
+			// printSet(inMap[currBB], "New In");
 			if (!meetChangedValue && !first)
 			{
 				continue;
 			}
 			first = false;
 			bool transferChangedValue = this->transfer->doTransfer(currBB, this->inMap, this->outMap);
-			// printSet(inMap[currBB], "New In");
+			// printSet(outMap[currBB], "New Out");
 			this->addToWorklist(currBB, workList);
 		}
 	}
