@@ -1,8 +1,6 @@
 #ifndef CS380C_ASSIGNMENT4_DFAFRAMEWORK_H
 #define CS380C_ASSIGNMENT4_DFAFRAMEWORK_H
 
-enum STATUS {LIVE, FAINT, UNKNOWN};
-
 #include <unordered_set>
 #include <unordered_map>
 #include "Meet.h"
@@ -15,7 +13,6 @@ enum STATUS {LIVE, FAINT, UNKNOWN};
 #include <llvm/IR/Function.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/Analysis/LoopPass.h>
-// #include <llvm/Support/SmallVector>
 #include <queue>
 #include <stack>
 
@@ -229,6 +226,11 @@ public:
 	}
 	const TypeSet& getOutValues(const llvm::BasicBlock* bb) const {
 		return outMap.at(bb);
+	}
+
+	const OrderMap* getPostOrderMap() const
+	{
+		return &postOrderMap;
 	}
 };
 }

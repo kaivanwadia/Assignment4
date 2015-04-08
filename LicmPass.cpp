@@ -36,6 +36,11 @@ bool LicmPass::deleteInstructions(llvm::Loop* loop)
 {
 	bool changed = false;
 	errs() << "=============Start Hoisting================\n";
+	// std::unordered_map<int ,BasicBlock*> reversePostOrder;
+	// for (auto it = dfa->getPostOrderMap()->begin(); it != dfa->getPostOrderMap()->end(); ++it)
+	// {
+	// 	reversePostOrder[it->second]
+	// }
 	for (Loop::block_iterator bbItr = loop->block_begin(); bbItr != loop->block_end(); ++bbItr)
 	{
 		std::vector<Instruction*> toBeHoisted;

@@ -39,7 +39,7 @@ public:
 	bool doTransfer( const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
 		bool updated = false;
-		printf("In doTransfer of LICMTransfer\n");
+		DEBUG( errs() << "In doTransfer of LICMTransfer\n");
 		TypeSet genSet;
 		TypeSet killSet;
 		TypeSet inSet = inMap[bb];
@@ -108,9 +108,9 @@ public:
 			}
 		}
 		TypeSet outVars;
-		// errs() << "InVars Set : " << inSet.size() << "\n";
-		// errs() << "Kill Set : " << killSet.size() << "\n";
-		// errs() << "Gen Set : " << genSet.size() << "\n";
+		DEBUG( errs() << "InVars Set : " << inSet.size() << "\n");
+		DEBUG( errs() << "Kill Set : " << killSet.size() << "\n");
+		DEBUG( errs() << "Gen Set : " << genSet.size() << "\n");
 		for (auto inVar : inSet)
 		{
 			if (killSet.count(inVar) == 0)
@@ -125,7 +125,7 @@ public:
 				updated |= outVars.insert(genVar).second;
 			}
 		}
-		// errs() << "OutVars Set : " << outVars.size() << "\n";
+		DEBUG( errs() << "OutVars Set : " << outVars.size() << "\n");
 		outMap[bb] = outVars;
 		return updated;
 	}
@@ -139,7 +139,7 @@ public:
 	bool doTransfer(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
 		bool updated = false;
-		printf("In doTransfer of DCETransfer\n");
+		DEBUG( errs() << "In doTransfer of DCETransfer\n" );
 
 		TypeSet genSet;
 		TypeSet killSet;
@@ -199,8 +199,8 @@ public:
 			}
 		}
 		TypeSet inVars;
-		// errs() << "Kill Set : " << killSet.size() << "\n";
-		// errs() << "Gen Set : " << genSet.size() << "\n";
+		DEBUG( errs() << "Kill Set : " << killSet.size() << "\n" );
+		DEBUG( errs() << "Gen Set : " << genSet.size() << "\n" );
 		for (auto outVar : outSet)
 		{
 			if (killSet.count(outVar) == 0)
@@ -208,7 +208,7 @@ public:
 				updated |= inVars.insert(outVar).second;
 			}
 		}
-		// errs() << "InVars Set : " << inVars.size() << "\n";
+		DEBUG( errs() << "InVars Set : " << inVars.size() << "\n" );
 		inMap[bb] = inVars;
 		return updated;
 	}

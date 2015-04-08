@@ -35,7 +35,7 @@ public:
 
 	bool doMeet( const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
-		printf("In doMeet of LICMMeet\n");
+		DEBUG(errs() << "In doMeet of LICMMeet\n");
 
 		bool updated = false;
 		auto itr = inMap.find(bb);
@@ -54,13 +54,13 @@ public:
 				continue;
 			}
 			auto predVars = outMap[*bbItr];
-			// errs() << "PredVars size : " << predVars.size() << "\n";
+			DEBUG( errs() << "PredVars size : " << predVars.size() << "\n");
 			for(Instruction* inst : predVars)
 			{
 				newSet.insert(inst);
 			}
 		}
-		// errs() << "NewSet size : " << newSet.size() << "\n";
+		DEBUG( errs() << "NewSet size : " << newSet.size() << "\n");
 		if(newSet.size() != instSet.size())
 		{
 			updated |= true;
@@ -89,7 +89,7 @@ public:
 	DCEMeet() : Meet<llvm::StringRef, StringRefHash, StringRefEqual>() {}
 	bool doMeet(const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
-		printf("In doMeet of DCEMeet\n");
+		DEBUG( errs() << "In doMeet of DCEMeet\n" );
 		bool updated = false;
 		if (bb->getTerminator()->getNumSuccessors() == 0)
 		{
@@ -107,7 +107,7 @@ public:
 		{
 			if (inMap.find(*bbOuter) == inMap.end())
 			{
-				// errs() << "No map for BB Outer : " << (*bbOuter)->getName() << "\n";
+				DEBUG(errs() << "No map for BB Outer : " << (*bbOuter)->getName() << "\n" );
 				continue;
 			}
 			auto outerVariables = inMap[*bbOuter];
@@ -122,7 +122,7 @@ public:
 					}
 					if (inMap.find(*bbInner) == inMap.end())
 					{
-						// errs() << "No map for BB Inner : " << (*bbInner)->getName() << "\n";
+						DEBUG( errs() << "No map for BB Inner : " << (*bbInner)->getName() << "\n");
 						continue;
 					}
 					if (inMap[*bbInner].count(variable) == 0) // Could not find variable. Don't put in intersectedSet
@@ -132,7 +132,7 @@ public:
 				}
 				if(present)
 				{
-					// printf("%s :added ", variable.str().c_str());
+					DEBUG( printf("%s :added ", variable.str().c_str()) );
 					intersectedSet.insert(variable);
 				}
 			}
