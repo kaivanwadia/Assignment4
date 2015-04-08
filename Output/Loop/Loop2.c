@@ -6,7 +6,7 @@ int sum(int a, int b)
 	for (int i = 0; i < b; i++)
 	{
 		x = a*a;
-		y = c*c;
+		y = x*c;
 	}
 	int ret = b*x;
 	return ret;

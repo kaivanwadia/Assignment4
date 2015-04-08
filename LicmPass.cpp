@@ -8,6 +8,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/ADT/DenseMap.h"
 #include <unordered_set>
+#include <queue>
 #include "Equal.h"
 #include <iostream>
 
@@ -35,35 +36,66 @@ bool LicmPass::runOnLoop(llvm::Loop* loop, llvm::LPPassManager& lpm)
 bool LicmPass::deleteInstructions(llvm::Loop* loop)
 {
 	bool changed = false;
-	// std::unordered_map<int ,BasicBlock*> reversePostOrder;
-	// for (auto it = dfa->getPostOrderMap()->begin(); it != dfa->getPostOrderMap()->end(); ++it)
-	// {
-	// 	reversePostOrder[it->second]
-	// }
-	DEBUG( errs() << "=============Start Hoisting================\n" );
-	for (Loop::block_iterator bbItr = loop->block_begin(); bbItr != loop->block_end(); ++bbItr)
+	std::unordered_map<int ,BasicBlock*> reversePostOrder;
+	for (auto it = dfa->getPostOrderMap()->begin(); it != dfa->getPostOrderMap()->end(); ++it)
 	{
-		std::vector<Instruction*> toBeHoisted;
-		InstSet outInvariant = this->getInValues((*bbItr));
-		for (auto& inst : *(*bbItr))
-		{
-			if (outInvariant.count(&inst) != 0)
-			{
-				toBeHoisted.push_back(&inst);
-				changed = true;
-			}
-		}
-		for (int i = toBeHoisted.size() - 1; i>=0; i--)
-		{
-			Instruction* toHoist = toBeHoisted[i];
-			DEBUG (errs() << "Hoisting : " << toHoist->getName() << "\t" << "Type : " );
-			DEBUG (toHoist->getType()->print(errs()) );
-			DEBUG (errs() <<"\n" );
-			toHoist->moveBefore(loop->getLoopPreheader()->getTerminator());
-			NumInstHoisted++;
-		}
-		toBeHoisted.clear();
+		reversePostOrder[it->second] = it->first;
+		DEBUG( errs() << it->second << " : " << it->first->getName() << "\n");
 	}
+	DEBUG( errs() << "Deleting Instructions\n");
+	DEBUG( errs() << "reversePostOrder size : " << reversePostOrder.size() << "\n");
+	DEBUG( errs() << "=============Start Hoisting================\n" );
+	for (int i = reversePostOrder.size() - 1; i >= 0; i--)
+	{
+		BasicBlock* bb = reversePostOrder[i];
+		if (loop->contains(bb))
+		{
+			std::queue<Instruction*> toBeHoisted;
+			InstSet outInvariant = this->getInValues(bb);
+			for (auto& inst : *bb)
+			{
+				if (outInvariant.count(&inst) != 0)
+				{
+					toBeHoisted.push(&inst);
+					changed = true;
+				}
+			}
+			while (!toBeHoisted.empty())
+			{
+				Instruction* toHoist = toBeHoisted.front();
+				toBeHoisted.pop();
+				DEBUG (errs() << "Hoisting : " << toHoist->getName() << "\t" << "Type : " );
+				DEBUG (toHoist->getType()->print(errs()) );
+				DEBUG (errs() <<"\n" );
+				toHoist->moveBefore(loop->getLoopPreheader()->getTerminator());
+				NumInstHoisted++;
+			}
+			// toBeHoisted.clear();
+		}
+	}
+	// for (Loop::block_iterator bbItr = loop->block_begin(); bbItr != loop->block_end(); ++bbItr)
+	// {
+	// 	std::vector<Instruction*> toBeHoisted;
+	// 	InstSet outInvariant = this->getInValues((*bbItr));
+	// 	for (auto& inst : *(*bbItr))
+	// 	{
+	// 		if (outInvariant.count(&inst) != 0)
+	// 		{
+	// 			toBeHoisted.push_back(&inst);
+	// 			changed = true;
+	// 		}
+	// 	}
+	// 	for (int i = toBeHoisted.size() - 1; i>=0; i--)
+	// 	{
+	// 		Instruction* toHoist = toBeHoisted[i];
+	// 		DEBUG (errs() << "Hoisting : " << toHoist->getName() << "\t" << "Type : " );
+	// 		DEBUG (toHoist->getType()->print(errs()) );
+	// 		DEBUG (errs() <<"\n" );
+	// 		toHoist->moveBefore(loop->getLoopPreheader()->getTerminator());
+	// 		NumInstHoisted++;
+	// 	}
+	// 	toBeHoisted.clear();
+	// }
 	DEBUG( errs() << "=============End Hoisting================\n" );
 	return changed;
 }

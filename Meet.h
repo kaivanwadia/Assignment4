@@ -36,11 +36,13 @@ public:
 	bool doMeet( const llvm::BasicBlock* bb, DFAMap& inMap, DFAMap& outMap)
 	{
 		DEBUG(errs() << "In doMeet of LICMMeet\n");
+		DEBUG(errs() << "InMap size : " << inMap.size() << "\n");
 
 		bool updated = false;
 		auto itr = inMap.find(bb);
 		if(itr == inMap.end())
 		{
+			DEBUG(errs() << "In map not found in LICMMeet\n");
 			updated = true;
 			itr = inMap.insert(std::make_pair(bb, InstSet())).first;	
 		}
@@ -60,7 +62,7 @@ public:
 				newSet.insert(inst);
 			}
 		}
-		DEBUG( errs() << "NewSet size : " << newSet.size() << "\n");
+		// DEBUG( errs() << "NewSet size : " << newSet.size() << "\n");
 		if(newSet.size() != instSet.size())
 		{
 			updated |= true;

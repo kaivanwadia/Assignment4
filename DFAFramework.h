@@ -118,7 +118,7 @@ public:
 			}
 			first = false;
 			bool transferChangedValue = this->transfer->doTransfer(currBB, this->inMap, this->outMap);
-			// printSet(inMap[currBB], "New In");
+			DEBUG( printSet(inMap[currBB], "New In") );
 			this->addToWorklist(currBB, workList);
 		}
 	}
@@ -139,7 +139,7 @@ public:
 		llvm::BasicBlock* bb;
 		// Setting up initial basic block
 		bb = *(loop->block_begin());
-		this->outMap.insert(std::make_pair(bb, this->initialSet));
+		this->inMap.insert(std::make_pair(bb, this->initialSet));
 		workList.enqueue(bb, postOrderMap[bb]);
 		bool first = true;
 		// Start iterating over the worklist till empty
@@ -153,11 +153,11 @@ public:
 				DEBUG (errs() << "Not Contained in Loop\n");
 				continue;
 			}
-			DEBUG (printSet(inMap[currBB], "In"));
-			DEBUG (printSet(outMap[currBB], "Out"));
+			// DEBUG (printSet(inMap[currBB], "In"));
+			// DEBUG (printSet(outMap[currBB], "Out"));
 			bool meetChangedValue = this->meet->doMeet(currBB, this->inMap, this->outMap);
-			DEBUG (errs() << "Meet Changed : " << meetChangedValue << "\n");
-			DEBUG (printSet(inMap[currBB], "New In"));
+			// DEBUG (errs() << "Meet Changed : " << meetChangedValue << "\n");
+			// DEBUG (printSet(inMap[currBB], "New In"));
 			if (!meetChangedValue && !first)
 			{
 				continue;
