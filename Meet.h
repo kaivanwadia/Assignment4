@@ -44,7 +44,6 @@ public:
 			updated = true;
 			itr = inMap.insert(std::make_pair(bb, InstSet())).first;	
 		}
-
 		auto& instSet = itr->second;
 		InstSet newSet;
 		for(auto bbItr = pred_begin(bb); bbItr != pred_end(bb); bbItr++)
@@ -55,12 +54,13 @@ public:
 				continue;
 			}
 			auto predVars = outMap[*bbItr];
+			// errs() << "PredVars size : " << predVars.size() << "\n";
 			for(Instruction* inst : predVars)
 			{
 				newSet.insert(inst);
 			}
 		}
-
+		// errs() << "NewSet size : " << newSet.size() << "\n";
 		if(newSet.size() != instSet.size())
 		{
 			updated |= true;
@@ -75,6 +75,7 @@ public:
 				}
 			}
 		}
+		instSet = newSet;
 		return updated;
 	}
 

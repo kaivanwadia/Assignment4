@@ -15,6 +15,7 @@ enum STATUS {LIVE, FAINT, UNKNOWN};
 #include <llvm/IR/Function.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/Analysis/LoopPass.h>
+// #include <llvm/Support/SmallVector>
 #include <queue>
 #include <stack>
 
@@ -124,11 +125,26 @@ public:
 		}
 	}
 
-	void doDFA(llvm::Loop* loop, llvm::LPPassManager& lpm, llvm::LoopInfo& loopInfo)
+	void doDFA(llvm::Loop* loop, llvm::LPPassManager& lpm) //, llvm::LoopInfo& loopInfo
 	{
 		llvm::Function* f = (loop->getLoopPreheader()->getParent());
 		printf("In doDFA for Loop\n");
-		errs() << "Function name : " << f->getName() << "\n";
+		// errs() << "Function name : " << f->getName() << "\n";
+		// loop->print(errs());
+		// errs() << "\n";
+		// errs() << "Preheader : " << loop->getLoopPreheader()->getName() << "\n";
+		// SmallVector<BasicBlock*, 4> exitingBlocks;
+		// loop->getExitingBlocks(exitingBlocks);
+		// for (auto it = exitingBlocks.begin(); it != exitingBlocks.end(); ++it)
+		// {
+		// 	errs() << "ExitingBB : " << (*it)->getName() << "\t" << loop->contains((*it)) << "\n";
+		// }
+		// SmallVector<BasicBlock*, 4> exitBlocks;
+		// loop->getExitBlocks(exitBlocks);
+		// for (auto it = exitBlocks.begin(); it != exitBlocks.end(); ++it)
+		// {
+		// 	errs() << "ExitBB : " << (*it)->getName() << "\t" << loop->contains((*it)) << "\n";
+		// }
 
 		computePostOrder(*f);
 		WorkList<llvm::BasicBlock*> workList = WorkList<llvm::BasicBlock*>(postOrderMap.size(), topDown);
@@ -163,9 +179,10 @@ public:
 		}
 	}
 
-	void setDominatorTree(DominatorTreeWrapperPass* _domInfo)
+	void setTransferHelpers(DominatorTreeWrapperPass* _domInfo, Loop* _loop)
 	{
 		this->transfer->dominatorInfo = _domInfo;
+		this->transfer->loop = _loop;
 	}
 
 	static void printSet(TypeSet& set, std::string str)

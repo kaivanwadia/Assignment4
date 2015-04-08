@@ -3,6 +3,7 @@
 
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Dominators.h>
+#include <llvm/Analysis/LoopInfo.h>
 #include "DFAFramework.h"
 #include <unordered_set>
 #include <unordered_map>
@@ -21,6 +22,7 @@ class Transfer
 private:
 public:
 	const DominatorTreeWrapperPass* dominatorInfo;
+	const Loop* loop;
 	using TypeSet = std::unordered_set<T, HasherType, EqualType>;
 	using DFAMap = std::unordered_map<const llvm::BasicBlock*, TypeSet>;
 	Transfer() {}
@@ -38,8 +40,86 @@ public:
 	{
 		bool updated = false;
 		printf("In doTransfer of LICMTransfer\n");
-		errs() << "\n";
-		return false;
+		TypeSet genSet;
+		TypeSet killSet;
+		TypeSet inSet = inMap[bb];
+		for(auto instItr = bb->begin(); instItr != bb->end(); ++instItr)
+		{
+			// If a terminator instruction then add to kill set
+			if(isa<TerminatorInst>(*instItr))
+			{
+				continue;
+			}
+			// If a PHINode ignore it
+			if (isa<PHINode>(*instItr))
+			{
+				continue;
+			}
+			Instruction* inst = const_cast<Instruction*>(&(*instItr));
+			bool invariant = true;
+			for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+			{
+				if (isa<Constant>(*opItr) || isa<BasicBlock>(*opItr)) // Constant or BasicBlock so invariant.
+				{
+					invariant &= true;
+					continue;
+				}
+				if (isa<Argument>(*opItr)) // Argument to the function so invariant.
+				{
+					invariant &= true;
+					continue;
+				}
+				Instruction* opdDefinition = dyn_cast<Instruction>(*opItr);
+				if (!loop->contains(opdDefinition)) // Defined outside the loop so invariant.
+				{
+					invariant &= true;
+					continue;
+				}
+				if (inSet.count(opdDefinition) != 0) // In the inSet so invariant.
+				{
+					invariant &= true;
+					continue;
+				}
+				else if (genSet.count(opdDefinition) != 0) // In the genSet so invariant.
+				{
+					invariant &= true;
+					continue;
+				}
+				else
+				{
+					invariant &= false;
+				}
+			}
+			if (invariant)
+			{
+				genSet.insert(inst);
+			}
+			else
+			{
+				killSet.insert(inst);
+			}
+		}
+		TypeSet outVars;
+		// errs() << "InVars Set : " << inSet.size() << "\n";
+		// errs() << "Kill Set : " << killSet.size() << "\n";
+		// errs() << "Gen Set : " << genSet.size() << "\n";
+		for (auto inVar : inSet)
+		{
+			if (killSet.count(inVar) == 0)
+			{
+				updated |= outVars.insert(inVar).second;
+			}
+		}
+		for (auto genVar : genSet)
+		{
+			if (killSet.count(genVar) == 0)
+			{
+				updated |= outVars.insert(genVar).second;
+			}
+		}
+		// errs() << "OutVars Set : " << outVars.size() << "\n";
+		outMap[bb] = outVars;
+		return updated;
 	}
 };
 

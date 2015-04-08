@@ -21,7 +21,16 @@ public:
 
 	bool runOnLoop(llvm::Loop*, llvm::LPPassManager&);
 
+	bool deleteInstructions(llvm::Loop*);
+
 	void getAnalysisUsage(llvm::AnalysisUsage &AU) const;
+
+	const InstSet& getInValues(const llvm::BasicBlock* bb) const {
+		return dfa->getInValues(bb);
+	}
+	const InstSet& getOutValues(const llvm::BasicBlock* bb) const {
+		return dfa->getOutValues(bb);
+	}
 };
 
 }
