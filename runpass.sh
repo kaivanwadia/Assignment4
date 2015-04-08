@@ -17,3 +17,14 @@ else
 fi
 llvm-dis $1.bc -o $1.ll
 llvm-dis $1_Opt.bc -o $1_Opt.ll
+if [ "$3" == "test" ]
+then
+	echo "TEST BEGIN"
+	clang $1.bc -o temp
+	./temp > origOut
+	clang $1_Opt.bc -o temp
+	./temp > optOut
+	rm -f temp
+	diff origOut optOut
+	echo "TEST DONE"
+fi

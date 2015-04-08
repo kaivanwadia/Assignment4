@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int sum(int x)
 {
 	// x = x + 1;
@@ -5,4 +7,11 @@ int sum(int x)
 	int b = a - 3;
 	int c = a + b;
 	return b;
+}
+
+int main()
+{
+	int x = sum(3);
+	printf("%d\n", x);
+	return 2;
 }

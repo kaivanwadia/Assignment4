@@ -55,6 +55,14 @@ public:
 			{
 				continue;
 			}
+			if (isa<CallInst>(*instItr))
+			{
+				continue;
+			}
+			if ((*instItr).mayHaveSideEffects())
+			{
+				continue;
+			}
 			Instruction* inst = const_cast<Instruction*>(&(*instItr));
 			bool invariant = true;
 			for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
@@ -146,7 +154,31 @@ public:
 					if (!(isa<Constant>(*opItr)) && !(isa<BasicBlock>(*opItr)))
 					{
 						killSet.insert((*opItr)->getName());
-						// errs() << "Name : " << (*opItr)->getName() << "\n";
+					}
+				}
+				continue;
+			}
+			if (isa<CallInst>(*instItr))
+			{
+				killSet.insert((*instItr).getName());
+				const CallInst* callInst = dyn_cast<CallInst>(&(*instItr));
+				for (int i = 0; i < callInst->getNumArgOperands(); i++)
+				{
+					if (!isa<Constant>(callInst->getArgOperand(i)) && !isa<BasicBlock>(callInst->getArgOperand(i)))
+					{
+						killSet.insert((callInst->getArgOperand(i)->getName()));
+					}
+				}
+				continue;
+			}
+			if ((*instItr).mayHaveSideEffects())
+			{
+				killSet.insert((*instItr).getName());
+				for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
+				{
+					if (!isa<Constant>(*opItr) && !isa<BasicBlock>(*opItr))
+					{
+						killSet.insert((*opItr)->getName());
 					}
 				}
 				continue;

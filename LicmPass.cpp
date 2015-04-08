@@ -54,7 +54,6 @@ bool LicmPass::deleteInstructions(llvm::Loop* loop)
 			errs() << "Hoisting : " << toHoist->getName() << "\t" << "Type : ";
 			toHoist->getType()->print(errs());
 			errs() <<"\n";
-
 			toHoist->moveBefore(loop->getLoopPreheader()->getTerminator());
 			NumInstHoisted++;
 		}
