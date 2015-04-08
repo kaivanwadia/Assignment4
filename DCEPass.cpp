@@ -50,7 +50,7 @@ bool DCEPass::deleteInstructions(Function& f)
 		for (int i = toBeDeleted.size() - 1; i>=0; i--)
 		{
 			Instruction* inst = toBeDeleted[i];
-			errs() << "Deleting : " << inst->getName() << "\t" << "Type : ";
+			DEBUG (errs() << "Deleting : " << inst->getName() << "\t" << "Type : ");
 			inst->getType()->print(errs());
 			errs() <<"\n";
 			if (isa<PHINode>(inst))

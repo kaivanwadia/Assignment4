@@ -15,6 +15,7 @@ enum STATUS {LIVE, FAINT, UNKNOWN};
 #include <llvm/IR/Function.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/Analysis/LoopPass.h>
+#include <llvm/Support/Debug.h>
 // #include <llvm/Support/SmallVector>
 #include <queue>
 #include <stack>
@@ -87,7 +88,7 @@ public:
 
 	void doDFA(llvm::Function& f)
 	{
-		printf("In doDFA on Function\n");
+		DEBUG (printf("In doDFA on Function\n") );
 		computePostOrder(f);
 		WorkList<llvm::BasicBlock*> workList = WorkList<llvm::BasicBlock*>(postOrderMap.size(), topDown);
 		llvm::BasicBlock* bb;
@@ -108,12 +109,12 @@ public:
 		while (!workList.empty())
 		{
 			auto currBB = workList.dequeue();
-			errs() << "=======================================\n";
-			errs() << "Analyzing BB : " << currBB->getName() << "\n";
-			// printSet(inMap[currBB], "In");
-			// printSet(outMap[currBB], "Out");
+			DEBUG (errs() << "=======================================\n" );
+			DEBUG (errs() << "Analyzing BB : " << currBB->getName() << "\n" );
+			DEBUG (printSet(inMap[currBB], "In"));
+			DEBUG (printSet(outMap[currBB], "Out"));
 			bool meetChangedValue = this->meet->doMeet(currBB, this->inMap, this->outMap);
-			// printSet(outMap[currBB], "New Out");
+			DEBUG (printSet(outMap[currBB], "New Out"));
 			if (!meetChangedValue && !first)
 			{
 				continue;
@@ -129,24 +130,12 @@ public:
 	{
 		llvm::Function* f = (loop->getLoopPreheader()->getParent());
 		printf("In doDFA for Loop\n");
-		errs() << "inMap Size : " << inMap.size() << "\n";
-		errs() << "outMap Size : " << outMap.size() << "\n";
-		errs() << "Function name : " << f->getName() << "\n";
-		loop->print(errs());
-		errs() << "\n";
-		errs() << "Preheader : " << loop->getLoopPreheader()->getName() << "\n";
-		// SmallVector<BasicBlock*, 4> exitingBlocks;
-		// loop->getExitingBlocks(exitingBlocks);
-		// for (auto it = exitingBlocks.begin(); it != exitingBlocks.end(); ++it)
-		// {
-		// 	errs() << "ExitingBB : " << (*it)->getName() << "\t" << loop->contains((*it)) << "\n";
-		// }
-		// SmallVector<BasicBlock*, 4> exitBlocks;
-		// loop->getExitBlocks(exitBlocks);
-		// for (auto it = exitBlocks.begin(); it != exitBlocks.end(); ++it)
-		// {
-		// 	errs() << "ExitBB : " << (*it)->getName() << "\t" << loop->contains((*it)) << "\n";
-		// }
+		DEBUG (errs() << "inMap Size : " << inMap.size() << "\n");
+		DEBUG (errs() << "outMap Size : " << outMap.size() << "\n");
+		DEBUG (errs() << "Function name : " << f->getName() << "\n");
+		DEBUG (loop->print(errs()));
+		DEBUG (errs() << "\n");
+		DEBUG (errs() << "Preheader : " << loop->getLoopPreheader()->getName() << "\n");
 
 		computePostOrder(*f);
 		WorkList<llvm::BasicBlock*> workList = WorkList<llvm::BasicBlock*>(postOrderMap.size(), topDown);
@@ -160,25 +149,25 @@ public:
 		while (!workList.empty())
 		{
 			auto currBB = workList.dequeue();
-			errs() << "=======================================\n";
-			errs() << "Analyzing BB : " << currBB->getName() << "\n";
+			DEBUG (errs() << "=======================================\n");
+			DEBUG (errs() << "Analyzing BB : " << currBB->getName() << "\n");
 			if (!loop->contains(currBB))
 			{
-				errs() << "Not Contained in Loop\n";
+				DEBUG (errs() << "Not Contained in Loop\n");
 				continue;
 			}
-			// printSet(inMap[currBB], "In");
-			// printSet(outMap[currBB], "Out");
+			DEBUG (printSet(inMap[currBB], "In"));
+			DEBUG (printSet(outMap[currBB], "Out"));
 			bool meetChangedValue = this->meet->doMeet(currBB, this->inMap, this->outMap);
-			errs() << "Meet Changed : " << meetChangedValue << "\n";
-			// printSet(inMap[currBB], "New In");
+			DEBUG (errs() << "Meet Changed : " << meetChangedValue << "\n");
+			DEBUG (printSet(inMap[currBB], "New In"));
 			if (!meetChangedValue && !first)
 			{
 				continue;
 			}
 			first = false;
 			bool transferChangedValue = this->transfer->doTransfer(currBB, this->inMap, this->outMap);
-			// printSet(outMap[currBB], "New Out");
+			DEBUG (printSet(outMap[currBB], "New Out"));
 			this->addToWorklist(currBB, workList);
 		}
 	}

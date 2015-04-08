@@ -18,7 +18,7 @@ STATISTIC(NumInstHoisted, "The # of instructions hoisted by LicmPass");
 
 bool LicmPass::runOnLoop(llvm::Loop* loop, llvm::LPPassManager& lpm)
 {
-	errs() << "In runOnLoop\n";
+	DEBUG( errs() << "In runOnLoop\n" );
 	InstSet initialSet;
 	delete dfa;
 	dfa = new DFAFramework<llvm::Instruction*>(true, new LICMMeet(), new LICMTransfer());
@@ -35,7 +35,7 @@ bool LicmPass::runOnLoop(llvm::Loop* loop, llvm::LPPassManager& lpm)
 bool LicmPass::deleteInstructions(llvm::Loop* loop)
 {
 	bool changed = false;
-	errs() << "=============Start Hoisting================\n";
+	DEBUG( errs() << "=============Start Hoisting================\n" );
 	for (Loop::block_iterator bbItr = loop->block_begin(); bbItr != loop->block_end(); ++bbItr)
 	{
 		std::vector<Instruction*> toBeHoisted;
@@ -51,15 +51,15 @@ bool LicmPass::deleteInstructions(llvm::Loop* loop)
 		for (int i = toBeHoisted.size() - 1; i>=0; i--)
 		{
 			Instruction* toHoist = toBeHoisted[i];
-			errs() << "Hoisting : " << toHoist->getName() << "\t" << "Type : ";
-			toHoist->getType()->print(errs());
-			errs() <<"\n";
+			DEBUG (errs() << "Hoisting : " << toHoist->getName() << "\t" << "Type : " );
+			DEBUG (toHoist->getType()->print(errs()) );
+			DEBUG (errs() <<"\n" );
 			toHoist->moveBefore(loop->getLoopPreheader()->getTerminator());
 			NumInstHoisted++;
 		}
 		toBeHoisted.clear();
 	}
-	errs() << "=============End Hoisting================\n";
+	DEBUG( errs() << "=============End Hoisting================\n" );
 	return changed;
 }
 
