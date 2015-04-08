@@ -14,10 +14,10 @@ then
 	for i in $1*.bc
 	do
 		echo "====================== $i ==================="
-		opt -stats -loop-simplify -mergereturn -instnamer -load ./$2.so -$2 $i -o $i
+		opt -loop-simplify -mergereturn -instnamer -load ./$2.so -$2 $i -o $i
 		llvm-dis $i -o ${i%.bc}.ll
 
-		if [ "$3 " == "test" ]
+		if [ "$3" == "test" ]
 		then
 			echo "TEST BEGIN"
 			clang $i -o temp

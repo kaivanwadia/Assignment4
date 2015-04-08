@@ -1,6 +1,7 @@
 #ifndef CS380C_ASSIGNMENT4_DFAFRAMEWORK_H
 #define CS380C_ASSIGNMENT4_DFAFRAMEWORK_H
 
+#include <llvm/Support/Debug.h>
 #include <unordered_set>
 #include <unordered_map>
 #include "Meet.h"
@@ -13,7 +14,6 @@
 #include <llvm/IR/Function.h>
 #include <llvm/IR/CFG.h>
 #include <llvm/Analysis/LoopPass.h>
-#include <llvm/Support/Debug.h>
 #include <queue>
 #include <stack>
 
@@ -126,7 +126,7 @@ public:
 	void doDFA(llvm::Loop* loop, llvm::LPPassManager& lpm) //, llvm::LoopInfo& loopInfo
 	{
 		llvm::Function* f = (loop->getLoopPreheader()->getParent());
-		printf("In doDFA for Loop\n");
+		DEBUG (printf("In doDFA for Loop\n") );
 		DEBUG (errs() << "inMap Size : " << inMap.size() << "\n");
 		DEBUG (errs() << "outMap Size : " << outMap.size() << "\n");
 		DEBUG (errs() << "Function name : " << f->getName() << "\n");
