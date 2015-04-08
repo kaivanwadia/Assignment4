@@ -15,6 +15,19 @@ then
 	do
 		echo "====================== $i ==================="
 		opt -stats -loop-simplify -mergereturn -instnamer -load ./$2.so -$2 $i -o $i
-		#llvm-dis $i -o ${i%.bc}.ll
+		llvm-dis $i -o ${i%.bc}.ll
+
+		if [ "$3 " == "test" ]
+		then
+			echo "TEST BEGIN"
+			clang $i -o temp
+			./temp > orig_${i%.bc}
+			clang ${i%.bc}_Opt.bc -o temp
+			./temp > opt_${i%.bc}
+			rm -f temp
+			diff orig_${i%.bc} opt_${i%.bc}
+			echo "TEST DONE"
+		fi		
+		echo "===================== END ==================="
 	done
 fi
