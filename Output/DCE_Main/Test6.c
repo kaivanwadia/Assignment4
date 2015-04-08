@@ -29,11 +29,11 @@ int func(int a, int b)
 	{
 		q = 10;
 		w = 15;
-		a = 100; // dead
+		a = 100 * b; // dead
 	}
 	else
 	{
-		a = 5; // dead
+		a = 5 * a; // dead
 		q = w * 5;
 		b = 4 + 2 + w + a; // dead
 	}

@@ -23,11 +23,11 @@ bool DCEPass::runOnFunction(Function& f)
 	dfa->setInitialValues(initialSet);
 	dfa->doDFA(f);
 	DataFlowAnnotator<DCEPass> annotator(*this, errs());
-	annotator.print(f);
+	DEBUG( annotator.print(f) );
 
 	// Delete Instructions
 	bool changed = this->deleteInstructions(f);
-	annotator.print(f);
+	DEBUG( annotator.print(f) );
 	return true;
 }
 
@@ -51,8 +51,8 @@ bool DCEPass::deleteInstructions(Function& f)
 		{
 			Instruction* inst = toBeDeleted[i];
 			DEBUG (errs() << "Deleting : " << inst->getName() << "\t" << "Type : ");
-			inst->getType()->print(errs());
-			errs() <<"\n";
+			DEBUG (inst->getType()->print(errs()) );
+			DEBUG (errs() <<"\n" );
 			if (isa<PHINode>(inst))
 			{
 				PHINode* phiInst = dyn_cast<PHINode>(inst);

@@ -10,7 +10,7 @@ int func(int a, int b)
 		w += q * i; // dead
 	}
 
-	int b = w * q; // dead
+	b = w * q; // dead
 
 	return q;
 }

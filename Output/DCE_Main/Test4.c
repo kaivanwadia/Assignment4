@@ -14,11 +14,11 @@ int func(int a, int b)
 	{
 		q = 10;
 		w = 15;
-		a = 100; // dead
+		a = 100 * a; // dead
 	}
 	else
 	{
-		a = 5; // dead
+		a = 5 * b; // dead
 		q = w * 5;
 		b = 4 + 2 + w; // dead
 	}
