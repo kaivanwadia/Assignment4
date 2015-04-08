@@ -1,13 +1,25 @@
 int sum(int a, int b, int c)
 {
-	int x = c * 2;//14
-	int y = c + 1;//8
+	int x = a + 2;
+	int y = b + 1;
 	for (int i = 0; i < a; i++)
 	{
-		y = a*c;
-		for (int j = 0; j < b; j++)
+		if (i == a)
 		{
-			x = b*3;
+			x = a*a;
+			if (i == c)
+			{
+				y = a*c;
+				break;
+			}
+			else
+			{
+				y = a*b;
+			}
+		}
+		else
+		{
+			x = b*b;
 		}
 	}
 	return x * y;
@@ -15,11 +27,11 @@ int sum(int a, int b, int c)
 
 int main()
 {
-	int x = sum(0, 0, 7);
+	int x = sum(2, 0, 3);
 	printf("Both loop not run : %d\n", x);
-	x = sum(2, 0, 7);
+	x = sum(6, 3, 5);
 	printf("Outer Loop run : %d\n", x);
-	x = sum(2, 5, 7);
+	x = sum(3, 5, 9);
 	printf("Both loop run : %d\n", x);
 	return 0;
 }
