@@ -1,13 +1,29 @@
 int sum(int a, int b, int c)
 {
-	int x = a * 2;
-	int y = c + b;
+	int x = a + 2;
+	int y = b + 1;
 	for (int i = 0; i < a; i++)
 	{
 		if (i == a)
 		{
 			x = a*a;
-			break;
+			if (i == c)
+			{
+				y = a*c;
+				break;
+			}
+			else
+			{
+				y = a*b;
+				for (int j = 0; j < b; j++)
+				{
+					y = y*2;
+					if ( y == c)
+					{
+						break;
+					}
+				}
+			}
 		}
 		else
 		{

@@ -7,3 +7,12 @@ int sum(int a, int b)
 	}
 	return b*x;
 }
+
+int main()
+{
+	int x = sum(2, 0);
+	printf("Loop not run : %d\n", x); // Should print 2
+	x = sum(2, 5);
+	printf("Loop run : %d\n", x); // Should print 10
+	return 0;
+}

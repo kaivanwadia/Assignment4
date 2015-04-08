@@ -1,12 +1,28 @@
-int sum(int a, int b)
+int sum(int a, int b, int c)
 {
-	int x = a * 2;
-	for (int i = 0; i < 10; i++)
+	int c = b*2;
+	int x = a*2;
+	int y = 0;
+	for (int i = 0; i < b; i++)
 	{
-		for (int j = 0; j < 10; j++)
+		x = a+b;
+		y = x*c;
+		for (int j = 0; j < c; j++)
 		{
-			x = b*3;
+			y= y*2;
 		}
 	}
-	return x * 2;
+	int ret = a*x;
+	return x;
+}
+
+int main()
+{
+	int x = sum(2, 0, 3);
+	printf("Loop not run : %d\n", x);
+	x = sum(2, 5, 5);
+	printf("Loop run : %d\n", x);
+	x = sum(2, 5, 0);
+	printf("Loop run : %d\n", x);
+	return 0;
 }
