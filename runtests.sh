@@ -1,8 +1,9 @@
 #!/bin/bash
+rm -f $1*.bc $1*.ll
 for i in $1*.c
 do
 	clang -emit-llvm -c $i -o ${i%.c}.bc
-	opt -mem2reg $i.bc -o ${i%.c}.bc
+	opt -mem2reg ${i%.c}.bc -o ${i%.c}.bc
 done
 
 make clean
