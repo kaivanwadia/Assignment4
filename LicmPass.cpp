@@ -70,32 +70,8 @@ bool LicmPass::deleteInstructions(llvm::Loop* loop)
 				toHoist->moveBefore(loop->getLoopPreheader()->getTerminator());
 				NumInstHoisted++;
 			}
-			// toBeHoisted.clear();
 		}
 	}
-	// for (Loop::block_iterator bbItr = loop->block_begin(); bbItr != loop->block_end(); ++bbItr)
-	// {
-	// 	std::vector<Instruction*> toBeHoisted;
-	// 	InstSet outInvariant = this->getInValues((*bbItr));
-	// 	for (auto& inst : *(*bbItr))
-	// 	{
-	// 		if (outInvariant.count(&inst) != 0)
-	// 		{
-	// 			toBeHoisted.push_back(&inst);
-	// 			changed = true;
-	// 		}
-	// 	}
-	// 	for (int i = toBeHoisted.size() - 1; i>=0; i--)
-	// 	{
-	// 		Instruction* toHoist = toBeHoisted[i];
-	// 		DEBUG (errs() << "Hoisting : " << toHoist->getName() << "\t" << "Type : " );
-	// 		DEBUG (toHoist->getType()->print(errs()) );
-	// 		DEBUG (errs() <<"\n" );
-	// 		toHoist->moveBefore(loop->getLoopPreheader()->getTerminator());
-	// 		NumInstHoisted++;
-	// 	}
-	// 	toBeHoisted.clear();
-	// }
 	DEBUG( errs() << "=============End Hoisting================\n" );
 	return changed;
 }

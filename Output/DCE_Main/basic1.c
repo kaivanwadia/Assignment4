@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 int temp(int e)
 {
 	int df = e * 5;
@@ -13,12 +15,13 @@ int temp1(int e)
 void temp2(int f)
 {
 	int df = f /2;
+	return;
 }
 
 int sum(int a, int b)
 {
 	int i;
-	int res = 1;
+	int res = 1*b;
 	int c[5] = {1,2,3,4,5};
 	int (*foo)(int);
 	if (b == 4)
@@ -36,4 +39,17 @@ int sum(int a, int b)
 	temp2(y);
 	c[2] = x + y;
 	return c[2];
+}
+
+int main()
+{
+	int x = sum(1,2);
+	printf("%d\n", x);
+	x = temp(3);
+	printf("%d\n", x);
+	x = temp1(6);
+	printf("%d\n", x);
+	temp2(9);
+	printf("%d\n", x);
+	return 1;
 }

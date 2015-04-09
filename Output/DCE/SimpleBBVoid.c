@@ -6,3 +6,9 @@ void sum(int x)
 	int c = a + b;
 	return;
 }
+
+int main()
+{
+	sum(2);
+	return 0;
+}

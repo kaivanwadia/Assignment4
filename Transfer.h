@@ -161,14 +161,21 @@ public:
 			if (isa<CallInst>(*instItr))
 			{
 				killSet.insert((*instItr).getName());
-				const CallInst* callInst = dyn_cast<CallInst>(&(*instItr));
-				for (int i = 0; i < callInst->getNumArgOperands(); i++)
+				for (auto opItr = (*instItr).op_begin(); opItr != (*instItr).op_end(); ++opItr)
 				{
-					if (!isa<Constant>(callInst->getArgOperand(i)) && !isa<BasicBlock>(callInst->getArgOperand(i)))
+					if (!isa<Constant>(*opItr) && !isa<BasicBlock>(*opItr))
 					{
-						killSet.insert((callInst->getArgOperand(i)->getName()));
+						killSet.insert((*opItr)->getName());
 					}
 				}
+				// const CallInst* callInst = dyn_cast<CallInst>(&(*instItr));
+				// for (int i = 0; i < callInst->getNumArgOperands(); i++)
+				// {
+				// 	if (!isa<Constant>(callInst->getArgOperand(i)) && !isa<BasicBlock>(callInst->getArgOperand(i)))
+				// 	{
+				// 		killSet.insert((callInst->getArgOperand(i)->getName()));
+				// 	}
+				// }
 				continue;
 			}
 			if ((*instItr).mayHaveSideEffects())

@@ -1,3 +1,4 @@
+#include <stdio.h>
 
 int faint(int x)
 {
@@ -11,4 +12,11 @@ int faint(int x)
     y--;
 
     return z;
+}
+
+int main()
+{
+	int x = faint(5);
+	printf("%d\n", x);
+	return 0;
 }
