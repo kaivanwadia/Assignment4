@@ -92,3 +92,10 @@ then
 		echo "===================== END ==================="
 	done
 fi
+
+if [[ $* == *-cleanup* ]]
+then
+	echo "removing $1*_opt and _orig"
+	rm -f $1*_opt 
+	rm -f $1*_orig
+fi
