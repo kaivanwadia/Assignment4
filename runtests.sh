@@ -39,7 +39,7 @@ then
 			rm -f temp
 			diff ${i%.bc}_orig ${i%.bc}_orig
 			echo "TEST DONE"
-		fi		
+		fi
 		echo "===================== END ==================="
 	done
 fi
@@ -57,9 +57,34 @@ then
 		then
 			echo "TEST BEGIN"
 			clang $i -o temp
-			./temp #> ${i%.bc}_orig
+			./temp > ${i%.bc}_orig
 			clang ${i%.bc}_Opt.bc -o temp
-			./temp #> ${i%.bc}_opt
+			./temp > ${i%.bc}_opt
+			rm -f temp
+			diff ${i%.bc}_orig ${i%.bc}_orig
+			echo "TEST DONE"
+		fi		
+		echo "===================== END ==================="
+	done
+fi
+
+if [ "$2" == "combo" ]
+then
+	make
+	for i in $1*.bc
+	do
+		echo "====================== $i ==================="
+		opt $debug $stats -mergereturn -loop-simplify -instnamer -load ./licm-pass.so -licm-pass $i -o ${i%.bc}_Opt.bc
+		opt $debug $stats -mergereturn -instnamer -load ./dce-pass.so -dce-pass ${i%.bc}_Opt.bc -o ${i%.bc}_Opt.bc
+		llvm-dis ${i%.bc}_Opt.bc -o ${i%.bc}.ll
+
+		if [ "$3" == "test" ]
+		then
+			echo "TEST BEGIN"
+			clang $i -o temp
+			./temp > ${i%.bc}_orig
+			clang ${i%.bc}_Opt.bc -o temp
+			./temp > ${i%.bc}_opt
 			rm -f temp
 			diff ${i%.bc}_orig ${i%.bc}_orig
 			echo "TEST DONE"

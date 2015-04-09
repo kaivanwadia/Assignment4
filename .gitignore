@@ -6,3 +6,5 @@
 *.pdf
 *.bc
 *.ll
+*_opt
+*_orig
