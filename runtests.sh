@@ -77,6 +77,7 @@ then
 		opt $debug $stats -mergereturn -loop-simplify -instnamer -load ./licm-pass.so -licm-pass $i -o ${i%.bc}_Opt.bc
 		opt $debug $stats -mergereturn -instnamer -load ./dce-pass.so -dce-pass ${i%.bc}_Opt.bc -o ${i%.bc}_Opt.bc
 		llvm-dis ${i%.bc}_Opt.bc -o ${i%.bc}.ll
+		llvm-dis $i -o ${i%.bc}_orig.ll
 
 		if [ "$3" == "test" ]
 		then
