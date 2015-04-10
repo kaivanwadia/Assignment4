@@ -34,7 +34,7 @@ bool DCEPass::runOnFunction(Function& f)
 bool DCEPass::deleteInstructions(Function& f)
 {
 	bool changed = false;
-	// errs() << "=============Start Deletion================\n";
+	DEBUG(errs() << "=============Start Deletion================\n");
 	for (auto& bb : f)
 	{
 		std::vector<Instruction*> toBeDeleted;
@@ -58,8 +58,6 @@ bool DCEPass::deleteInstructions(Function& f)
 				PHINode* phiInst = dyn_cast<PHINode>(inst);
 				for (int operandNo = phiInst->getNumIncomingValues() -1; operandNo >= 0; operandNo--)
 				{
-					// errs() << "Removing phi op : " << phiInst->getIncomingValue(operandNo)->getName() << "\n";
-					// errs() << "Removed : " << phiInst->removeIncomingValue(operandNo, true)->getName() << "\n";
 					phiInst->removeIncomingValue(operandNo, true);
 				}
 				NumInstRemoved++;
@@ -71,13 +69,10 @@ bool DCEPass::deleteInstructions(Function& f)
 				inst->eraseFromParent();
 				NumInstRemoved++;
 			}
-			// DataFlowAnnotator<DCEPass> annotator(*this, errs());
-			// annotator.print(f);
-			// errs() << "============================\n";
 		}
 		toBeDeleted.clear();
 	}
-	// errs() << "=============End Deletion================\n";
+	DEBUG(errs() << "=============End Deletion================\n");
 	return changed;
 }
 

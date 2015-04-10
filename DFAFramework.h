@@ -123,7 +123,7 @@ public:
 		}
 	}
 
-	void doDFA(llvm::Loop* loop, llvm::LPPassManager& lpm) //, llvm::LoopInfo& loopInfo
+	void doDFA(llvm::Loop* loop, llvm::LPPassManager& lpm)
 	{
 		llvm::Function* f = (loop->getLoopPreheader()->getParent());
 		DEBUG (printf("In doDFA for Loop\n") );
@@ -169,9 +169,8 @@ public:
 		}
 	}
 
-	void setTransferHelpers(DominatorTreeWrapperPass* _domInfo, Loop* _loop)
+	void setTransferHelpers(Loop* _loop)
 	{
-		this->transfer->dominatorInfo = _domInfo;
 		this->transfer->loop = _loop;
 	}
 

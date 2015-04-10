@@ -21,7 +21,6 @@ class Transfer
 {
 private:
 public:
-	const DominatorTreeWrapperPass* dominatorInfo;
 	const Loop* loop;
 	using TypeSet = std::unordered_set<T, HasherType, EqualType>;
 	using DFAMap = std::unordered_map<const llvm::BasicBlock*, TypeSet>;
@@ -168,14 +167,6 @@ public:
 						killSet.insert((*opItr)->getName());
 					}
 				}
-				// const CallInst* callInst = dyn_cast<CallInst>(&(*instItr));
-				// for (int i = 0; i < callInst->getNumArgOperands(); i++)
-				// {
-				// 	if (!isa<Constant>(callInst->getArgOperand(i)) && !isa<BasicBlock>(callInst->getArgOperand(i)))
-				// 	{
-				// 		killSet.insert((callInst->getArgOperand(i)->getName()));
-				// 	}
-				// }
 				continue;
 			}
 			if ((*instItr).mayHaveSideEffects())

@@ -62,7 +62,6 @@ public:
 				newSet.insert(inst);
 			}
 		}
-		// DEBUG( errs() << "NewSet size : " << newSet.size() << "\n");
 		if(newSet.size() != instSet.size())
 		{
 			updated |= true;
