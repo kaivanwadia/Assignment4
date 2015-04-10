@@ -1,6 +1,8 @@
 CXXFLAGS = -w $(shell llvm-config --cxxflags) -fno-rtti
 
 all: dce-pass.so licm-pass.so
+dce: dce-pass.so
+licm: licm-pass.
 dce-pass: dce-pass.so
 licm-pass: licm-pass.so
 
