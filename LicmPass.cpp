@@ -24,7 +24,8 @@ bool LicmPass::runOnLoop(llvm::Loop* loop, llvm::LPPassManager& lpm)
 	delete dfa;
 	dfa = new DFAFramework<llvm::Instruction*>(true, new LICMMeet(), new LICMTransfer());
 	dfa->setInitialValues(initialSet);
-	// LoopInfo& loopInfo = getAnalysis<LoopInfo>();
+	LoopInfo& loopInfo = getAnalysis<LoopInfo>();
+	loopInfo.print(errs());
 	DominatorTreeWrapperPass& dominatorInfo = getAnalysis<DominatorTreeWrapperPass>();
 	dfa->setTransferHelpers(&dominatorInfo, loop);
 	dfa->doDFA(loop, lpm);
